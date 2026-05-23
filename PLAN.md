@@ -393,7 +393,7 @@ Commit: `feat: add auth store, API interceptor, and AuthPage with form validatio
 
 ## Phase 2: Paint Library
 
-### Task 2.1: Brand Enum + Paint Entity + Repository
+### [x] Task 2.1: Brand Enum + Paint Entity + Repository — `65bf30b`
 
 - [ ] **Step 1: Create Brand.java enum** — GW, AV, AK, GSW, Scale75, ArmyPainter, Other
 
@@ -409,7 +409,7 @@ Commit: `feat: add auth store, API interceptor, and AuthPage with form validatio
 
 Commit: `feat: add Brand enum, Paint entity, and repository`（使用上述格式，标注 Subagent）
 
-### Task 2.2: PaintService + PaintController
+### [x] Task 2.2: PaintService + PaintController — `b6d82ed`
 
 - [ ] **Step 1: Write PaintServiceTest** — mock PaintRepository. Tests: create paint, list paints by userId, update paint (name/code/brand), delete paint, delete paint with recipe reference → warning
 
@@ -423,7 +423,7 @@ Commit: `feat: add Brand enum, Paint entity, and repository`（使用上述格�
 
 Commit: `feat: add PaintService CRUD and PaintController REST API`（使用上述格式，标注 Subagent）
 
-### Task 2.3: Frontend Paint Service + List Page
+### [x] Task 2.3: Frontend Paint (HTML) — `01985cc`
 
 - [ ] **Step 1: Create src/services/paintService.ts** — fetchPaints(params), createPaint(formData image+json), updatePaint(id, data), deletePaint(id)
 
@@ -435,7 +435,7 @@ Run: `npm test` → PASS
 
 Commit: `feat: add frontend paint service and PaintListPage`（使用上述格式，标注 Subagent）
 
-### Task 2.4: Add Paint Dialog + ColorPicker Component
+### [x] Task 2.4: Add Paint Dialog + Upload — `9c9b7db`
 
 - [ ] **Step 1: Create ColorPicker.tsx** — file input (accept jpg/png/webp, max 5MB canvas-resize to 1920px before upload), canvas rendering, click event reads pixel getImageData → extraction RGB, color preview swatch. Reusable prop: onColorPicked(r,g,b). Eye dropper cursor on hover
 
