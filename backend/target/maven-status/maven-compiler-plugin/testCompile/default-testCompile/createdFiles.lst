@@ -1,2 +1,3 @@
+com\minipaint\repository\UserRepositoryTest.class
 com\minipaint\MiniPaintApplicationTests.class
 com\minipaint\security\JwtTokenProviderTest.class

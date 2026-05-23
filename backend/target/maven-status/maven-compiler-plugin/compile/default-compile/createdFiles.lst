@@ -1,3 +1,5 @@
+com\minipaint\security\JwtTokenProvider.class
+com\minipaint\model\entity\User.class
 com\minipaint\MiniPaintApplication.class
 com\minipaint\config\CorsConfig.class
-com\minipaint\security\JwtTokenProvider.class
+com\minipaint\repository\UserRepository.class
