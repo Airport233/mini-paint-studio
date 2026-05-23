@@ -1,22 +1,20 @@
 import api from './api';
 
-interface AuthResponse {
+export interface AuthResponse {
   token: string;
   email: string;
 }
 
-interface ErrorResponse {
-  status: number;
-  message: string;
+export async function register(email: string, password: string): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>('/api/auth/register', { email, password });
+  return data;
 }
 
-export const authService = {
-  register: (email: string, password: string): Promise<AuthResponse> =>
-    api.post('/api/auth/register', { email, password }).then((r) => r.data),
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const { data } = await api.post<AuthResponse>('/api/auth/login', { email, password });
+  return data;
+}
 
-  login: (email: string, password: string): Promise<AuthResponse> =>
-    api.post('/api/auth/login', { email, password }).then((r) => r.data),
-
-  forgotPassword: (email: string): Promise<void> =>
-    api.post('/api/auth/forgot-password', { email }).then((r) => r.data),
-};
+export async function forgotPassword(email: string): Promise<void> {
+  await api.post('/api/auth/forgot-password', { email });
+}

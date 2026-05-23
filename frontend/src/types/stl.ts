@@ -1,11 +1,13 @@
 export interface StlFile {
   id: string;
-  displayName: string;
+  userId: string;
   originalName: string;
-  fileSize: number;
+  displayName: string;
+  filePath: string;
   rotationX: number;
   rotationY: number;
   rotationZ: number;
   heightOffset: number;
+  fileSize: number;
   createdAt: string;
 }

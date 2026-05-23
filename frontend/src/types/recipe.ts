@@ -1,14 +1,15 @@
-import type { MixCandidate, PaintPart } from './mix';
-
 export interface Recipe {
   id: string;
+  userId: string;
   name: string;
   tags: string[];
   targetR: number;
   targetG: number;
   targetB: number;
-  mixSnapshots: MixCandidate[];
-  cmyRef: PaintPart[];
+  mixSnapshots: unknown;
+  cmyRef: unknown;
   notes: string;
+  sourceImagePath: string | null;
   createdAt: string;
+  updatedAt: string;
 }

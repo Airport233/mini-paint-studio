@@ -1,6 +1,6 @@
 export interface LightSnapshot {
   type: 'directional' | 'point';
-  position: { x: number; y: number; z: number };
+  pos: { x: number; y: number; z: number };
   hex: string;
   colorTemp: number | null;
   intensity: number;
@@ -17,11 +17,22 @@ export interface MaterialSnapshot {
 
 export interface LightingPreset {
   id: string;
+  userId: string;
   name: string;
   geometryType: 'sphere' | 'cube' | 'cylinder' | 'stl';
   geometryRefId: string | null;
   materialSnapshot: MaterialSnapshot;
   lightsSnapshot: LightSnapshot[];
-  coverImagePath: string;
+  coverImagePath: string | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface LightingPresetRequest {
+  name: string;
+  geometryType: string;
+  geometryRefId: string | null;
+  materialSnapshot: MaterialSnapshot;
+  lightsSnapshot: LightSnapshot[];
+  coverBase64: string | null;
 }

@@ -5,24 +5,25 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@react-three/fiber": "^8.16.8",
+    "@react-three/drei": "^9.105.6",
+    "axios": "^1.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
-    "@react-three/fiber": "^8.16.2",
-    "@react-three/drei": "^9.105.4",
     "three": "^0.165.0",
-    "three-stdlib": "^2.29.4",
-    "zustand": "^4.5.2",
-    "axios": "^1.7.2"
+    "three-stdlib": "^2.30.1",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@testing-library/react": "^15.0.7",
     "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^15.0.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/three": "^0.165.0",

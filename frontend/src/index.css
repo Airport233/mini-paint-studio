@@ -1,33 +1,94 @@
+/* Discord design system tokens — Mini Paint Studio */
 :root {
-  --bg-primary: #36393f;
-  --bg-secondary: #2f3136;
-  --bg-tertiary: #202225;
-  --bg-input: #40444b;
-  --text-primary: #dcddde;
-  --text-secondary: #b9bbbe;
-  --text-muted: #72767d;
-  --accent: #5865f2;
-  --accent-hover: #4752c4;
-  --danger: #ed4245;
-  --success: #57f287;
-  --warning: #fee75c;
-  --border: #4f545c;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-  --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --bg:           #313338;
+  --surface:      #2b2d31;
+  --surface-warm: #1e1f22;
+  --fg:           #dbdee1;
+  --fg-2:         #f2f3f5;
+  --muted:        #949ba4;
+  --meta:         #80848e;
+  --border:       rgba(255, 255, 255, 0.06);
+  --border-soft:  #3f4147;
+  --accent:        #5865f2;
+  --accent-on:     #ffffff;
+  --accent-hover:  #4752c4;
+  --accent-active: color-mix(in oklab, var(--accent), black 14%);
+  --success: #23a55a;
+  --warn:    #f0b232;
+  --danger:  #f23f43;
+  --font-display: "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body:    "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:    "gg mono", Consolas, "Andale Mono", "Courier New", Courier, monospace;
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  32px;
+  --text-4xl:  56px;
+  --leading-body:     1.375;
+  --leading-tight:    1.10;
+  --tracking-display: -0.02em;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 40px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-pill: 9999px;
+  --elev-flat:   none;
+  --elev-ring:   0 0 0 1px var(--border);
+  --elev-raised: rgba(0, 0, 0, 0.4) 0px 2px 4px, 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --focus-ring: 0 0 0 3px rgba(88, 101, 242, 0.3);
+  --motion-fast:   80ms;
+  --motion-base:   200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --container-max:            1200px;
+  --container-gutter-desktop: 24px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: var(--font-sans);
-  background: var(--bg-primary);
-  color: var(--text-primary);
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button { cursor: pointer; }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface-warm);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--meta);
 }
