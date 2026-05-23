@@ -167,3 +167,24 @@
 - PLAN.md 中的"REQUIRED SUB-SKILL"是一种隐式的环境假设——假定执行 plan 的 agent 一定在 Superpowers 框架内运行。冷启动 agent 没有这个入口，会产生困惑。**这是 Superpowers 方法论的一个内在假设：plan 是在 Superpowers 环境内被消费的。当跨环境使用时，需要在 plan 中额外说明兼容方式。**
 - 除此之外，task 的技术内容（文件路径、代码片段、TDD 步骤）足够自包含，一个陌生 agent 可以直接执行。
 - 路径约定通过 File Map ASCII 图和每个 task 的 "Files: Create/Modify" 头部可以推断，但一个显式的"所有路径相对于仓库根目录"声明会更好。
+
+---
+
+## 6. Open Design 使用方式调整
+
+### 初始设想
+
+最初认为 Open Design 可以全自动生成 React 代码，直接在 Vite 项目中运行。第一轮试跑后发现：
+
+- Open Design 生成的 React 组件有大量 TS 错误（未使用的 import 等）
+- 业务逻辑代码（如 AuthPage 的表单验证、密码规则）与 SPEC 不一致
+- 生成完整 React 应用极其消耗 Token
+
+### 调整后
+
+**Open Design 只生成 HTML 原型**（纯 HTML + inline CSS），作为设计参考：
+- 设计令牌（CSS 变量）从原型中提取
+- 组件布局和视觉风格以原型为准
+- React 逻辑代码由编码智能体（Claude Code）手写实现
+
+这更符合作业的初衷——Open Design 负责 UI 设计（71 个设计系统 + 设计令牌），编码智能体负责工程实现。
