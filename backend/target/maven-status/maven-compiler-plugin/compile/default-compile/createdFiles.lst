@@ -1,9 +1,12 @@
 com\minipaint\model\dto\request\RegisterRequest.class
 com\minipaint\service\impl\UserServiceImpl.class
+com\minipaint\model\entity\Paint.class
 com\minipaint\MiniPaintApplication.class
 com\minipaint\config\CorsConfig.class
+com\minipaint\repository\PaintRepository.class
 com\minipaint\security\JwtAuthenticationFilter.class
 com\minipaint\model\dto\request\LoginRequest.class
+com\minipaint\enums\Brand.class
 com\minipaint\model\dto\response\AuthResponse.class
 com\minipaint\security\JwtTokenProvider.class
 com\minipaint\model\entity\User.class
