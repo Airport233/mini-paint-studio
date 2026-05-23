@@ -90,7 +90,7 @@ Phase 0: Scaffolding → Phase 1: Auth → Phase 2: Paints → Phase 3: Mix → 
 
 ## Phase 0: Scaffolding
 
-### Task 0.1: Backend Project Initialization
+### [x] Task 0.1: Backend Project Initialization — `12343ba`
 
 - [ ] **Step 1: Write Spring context load test**
 
@@ -141,7 +141,7 @@ git add backend/ && git commit -m "chore: scaffold Spring Boot backend with CORS
 Subagent: <name>-s<N>"
 ```
 
-### Task 0.2: Frontend Project Initialization
+### [x] Task 0.2: Frontend Project Initialization — `3cb5cd3`
 
 - [ ] **Step 1: Write App render test**
 
