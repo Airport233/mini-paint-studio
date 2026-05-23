@@ -1,0 +1,33 @@
+:root {
+  --bg-primary: #36393f;
+  --bg-secondary: #2f3136;
+  --bg-tertiary: #202225;
+  --bg-input: #40444b;
+  --text-primary: #dcddde;
+  --text-secondary: #b9bbbe;
+  --text-muted: #72767d;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --danger: #ed4245;
+  --success: #57f287;
+  --warning: #fee75c;
+  --border: #4f545c;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  --font-sans: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+}
