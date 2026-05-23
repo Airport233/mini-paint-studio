@@ -31,8 +31,6 @@ export default function AuthPage() {
     if (tab !== 'forgot') {
       if (!password) errs.password = '请输入密码';
       else if (password.length < 8) errs.password = '密码长度不足 8 位';
-      else if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password))
-        errs.password = '密码需包含字母和数字';
     }
     if (tab === 'register' && password !== confirmPassword) {
       errs.confirmPassword = '两次输入的密码不一致';
@@ -183,7 +181,7 @@ export default function AuthPage() {
             <div>
               <input
                 type="password"
-                placeholder="请输入密码（至少8位，包含字母和数字）"
+                placeholder="请输入密码（至少8位字母或数字）"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
