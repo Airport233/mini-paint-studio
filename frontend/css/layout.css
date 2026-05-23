@@ -1,3 +1,4 @@
+#sidebar, #sidebar nav { height:100%; }
 #sidebar nav { width:240px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:16px 8px; }
 #sidebar .brand { font-size:16px; font-weight:700; color:var(--fg-2); padding:0 8px 20px; }
 #sidebar .brand span { color:var(--accent); }
