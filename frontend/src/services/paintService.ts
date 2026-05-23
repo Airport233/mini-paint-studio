@@ -10,10 +10,8 @@ export async function fetchPaints(params?: {
   return data;
 }
 
-export async function createPaint(formData: FormData): Promise<Paint> {
-  const { data } = await api.post<Paint>('/api/paints', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+export async function createPaint(body: PaintCreateRequest): Promise<Paint> {
+  const { data } = await api.post<Paint>('/api/paints', body);
   return data;
 }
 
