@@ -313,7 +313,7 @@
     authLogin(email, pw).then(function(resp) {
       localStorage.setItem('token', resp.token);
       localStorage.setItem('email', resp.email);
-      location.href = 'index.html';
+      location.href = '/';
     }).catch(function(err) {
       showToast('登录失败: ' + err.message, 'error');
     });
@@ -345,7 +345,7 @@
     authRegister(email, pw).then(function(resp) {
       localStorage.setItem('token', resp.token);
       localStorage.setItem('email', resp.email);
-      location.href = 'index.html';
+      location.href = '/';
     }).catch(function(err) {
       showToast('注册失败: ' + err.message, 'error');
     });

@@ -183,21 +183,22 @@
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
 </head>
 <body>
 
 <nav>
   <div class="brand"><i data-lucide="palette" class="nav-icon"></i> <span>Hobby</span>Mix</div>
-  <a href="index.html" class="active"><i data-lucide="home" class="nav-icon"></i> 首页</a>
-  <a href="paints.html"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
-  <a href="mix.html"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
-  <a href="color-wheel.html"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
-  <a href="preview.html"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
-  <a href="recipes.html"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
-  <a href="presets.html"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
+  <a href="/" class="active"><i data-lucide="home" class="nav-icon"></i> 首页</a>
+  <a href="/paints"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
+  <a href="/mix"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
+  <a href="/color-wheel"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
+  <a href="/preview"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
+  <a href="/recipes"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
+  <a href="/presets"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
   <div class="user-row">
     <i data-lucide="circle-user" class="nav-icon"></i> <span id="user-display">未登录</span>
-    <a class="logout" href="auth.html" id="auth-link">登录</a>
+    <a class="logout" href="/auth" id="auth-link">登录</a>
   </div>
 </nav>
 
@@ -208,42 +209,42 @@
   </div>
 
   <div class="grid">
-    <a class="card" href="paints.html">
+    <a class="card" href="/paints">
       <div class="icon"><i data-lucide="palette" class="nav-icon"></i></div>
       <div class="title">漆料库</div>
       <div class="desc">拍照取色录入真实颜色，管理手头所有漆料库存</div>
       <span class="tag">已实现</span>
     </a>
 
-    <a class="card" href="mix.html">
+    <a class="card" href="/mix">
       <div class="icon"><i data-lucide="flask-conical" class="nav-icon"></i></div>
       <div class="title">调色引擎</div>
       <div class="desc">目标色 → 整数份数配方，从库存匹配最佳混合方案</div>
       <span class="tag">已实现</span>
     </a>
 
-    <a class="card" href="color-wheel.html">
+    <a class="card" href="/color-wheel">
       <div class="icon"><i data-lucide="palette" class="nav-icon"></i></div>
       <div class="title">色彩工具</div>
       <div class="desc">互补色、三角色、类似色 — 弥补色彩理论短板</div>
       <span class="tag">已实现</span>
     </a>
 
-    <a class="card" href="preview.html">
+    <a class="card" href="/preview">
       <div class="icon"><i data-lucide="box" class="nav-icon"></i></div>
       <div class="title">3D 预览</div>
       <div class="desc">几何体 + STL 模型上预览材质和光照效果</div>
       <span class="tag wip">开发中</span>
     </a>
 
-    <a class="card" href="recipes.html">
+    <a class="card" href="/recipes">
       <div class="icon"><i data-lucide="clipboard-list" class="nav-icon"></i></div>
       <div class="title">配方库</div>
       <div class="desc">标签筛选 + 搜索，随手回看已保存的混色方案</div>
       <span class="tag wip">开发中</span>
     </a>
 
-    <a class="card" href="presets.html">
+    <a class="card" href="/presets">
       <div class="icon"><i data-lucide="lightbulb" class="nav-icon"></i></div>
       <div class="title">灯光预设</div>
       <div class="desc">保存并回放 3D 场景的多光源配置方案</div>

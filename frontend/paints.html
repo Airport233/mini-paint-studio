@@ -243,18 +243,19 @@
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
 </head>
 <body>
 
 <nav>
   <div class="brand"><i data-lucide="palette" class="nav-icon"></i> <span>Hobby</span>Mix</div>
-  <a href="index.html"><i data-lucide="home" class="nav-icon"></i> 首页</a>
-  <a href="paints.html" class="active"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
-  <a href="mix.html"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
-  <a href="color-wheel.html"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
-  <a href="preview.html"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
-  <a href="recipes.html"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
-  <a href="presets.html"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
+  <a href="/"><i data-lucide="home" class="nav-icon"></i> 首页</a>
+  <a href="/paints" class="active"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
+  <a href="/mix"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
+  <a href="/color-wheel"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
+  <a href="/preview"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
+  <a href="/recipes"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
+  <a href="/presets"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
 </nav>
 
 <main>
@@ -354,6 +355,7 @@
   </div>
 </div>
 <script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
 <script>
   requireAuth();
 

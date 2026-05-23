@@ -13,7 +13,7 @@ async function api(method, path, body) {
   if (res.status === 401 && !path.startsWith('/auth/')) {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
-    window.location.href = '/auth.html';
+    window.location.href = '/auth';
     return null;
   }
   if (!res.ok) {
@@ -85,7 +85,7 @@ async function deletePaint(id) {
 // Auth guard
 function requireAuth() {
   if (!localStorage.getItem('token')) {
-    window.location.href = '/auth.html';
+    window.location.href = '/auth';
   }
 }
 
@@ -93,5 +93,5 @@ function requireAuth() {
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('email');
-  window.location.href = '/auth.html';
+  window.location.href = '/auth';
 }

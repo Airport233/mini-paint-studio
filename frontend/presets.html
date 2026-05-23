@@ -121,13 +121,13 @@
 
 <nav>
   <div class="brand"><i data-lucide="palette" class="nav-icon"></i> <span>Hobby</span>Mix</div>
-  <a href="index.html"><i data-lucide="home" class="nav-icon"></i> 首页</a>
-  <a href="paints.html"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
-  <a href="mix.html"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
-  <a href="color-wheel.html"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
-  <a href="preview.html"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
-  <a href="recipes.html"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
-  <a href="presets.html" class="active"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
+  <a href="/"><i data-lucide="home" class="nav-icon"></i> 首页</a>
+  <a href="/paints"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
+  <a href="/mix"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
+  <a href="/color-wheel"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
+  <a href="/preview"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
+  <a href="/recipes"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
+  <a href="/presets" class="active"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
 </nav>
 
 <main>
@@ -167,7 +167,7 @@
         + '<span class="type-badge">' + p.geometry + '</span>'
         + '<span>' + p.lights + ' 个光源 · ' + p.date + '</span></div>'
         + '<div class="actions">'
-        + '<a class="btn btn-primary" href="preview.html"><i data-lucide="play" class="nav-icon"></i> 应用</a>'
+        + '<a class="btn btn-primary" href="/preview"><i data-lucide="play" class="nav-icon"></i> 应用</a>'
         + '<button class="btn btn-danger" onclick="event.stopPropagation();alert(\'[Hook] DELETE /api/lighting-presets/:id\')">删除</button>'
         + '</div></div></div>';
     }).join('');
