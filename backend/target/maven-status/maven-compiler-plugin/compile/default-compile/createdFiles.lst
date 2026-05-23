@@ -1,2 +1,3 @@
 com\minipaint\MiniPaintApplication.class
 com\minipaint\config\CorsConfig.class
+com\minipaint\security\JwtTokenProvider.class

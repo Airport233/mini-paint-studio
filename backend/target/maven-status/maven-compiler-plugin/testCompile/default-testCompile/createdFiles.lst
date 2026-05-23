@@ -1,1 +1,2 @@
 com\minipaint\MiniPaintApplicationTests.class
+com\minipaint\security\JwtTokenProviderTest.class
