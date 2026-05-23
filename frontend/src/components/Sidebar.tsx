@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { Palette, FlaskConical, Box, ClipboardList, Lightbulb, CircleUser } from 'lucide-react';
+import { Palette, FlaskConical, Box, ClipboardList, Lightbulb, CircleUser, Home } from 'lucide-react';
 
 const links = [
-  { to: '/', label: '首页', icon: Palette },
+  { to: '/', label: '首页', icon: Home },
   { to: '/paints', label: '漆料库', icon: Palette },
   { to: '/mix', label: '调色引擎', icon: FlaskConical },
   { to: '/color-wheel', label: '色彩工具', icon: Palette },
@@ -24,7 +24,7 @@ export default function Sidebar() {
   return (
     <nav className="sidebar">
       <div className="brand">
-        <span>Hobby</span>Mix
+        <Palette size={18} /> <span>Hobby</span>Mix
       </div>
       {links.map((link) => (
         <NavLink key={link.to} to={link.to} end={link.to === '/'} className={({ isActive }) => isActive ? 'active' : ''}>
