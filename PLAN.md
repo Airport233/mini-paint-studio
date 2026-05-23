@@ -208,7 +208,7 @@ Subagent: <name>-s<N>"
 
 ## Phase 1: User Accounts
 
-### Task 1.1: JWT Token Provider
+### [x] Task 1.1: JWT Token Provider — `9c7229a`
 
 - [ ] **Step 1: Write test** — `JwtTokenProviderTest.java` with 5 test cases: generate+extract email, validate valid token, reject expired token (sleep 2ms), reject wrong secret, reject malformed token
 
@@ -248,7 +248,7 @@ public class JwtTokenProvider {
 
 Commit: `feat: add JWT token provider with tests`（使用上述格式，标注 Subagent）
 
-### Task 1.2: User Entity + Repository
+### [x] Task 1.2: User Entity + Repository — `9c7229a`
 
 - [ ] **Step 1: Write UserRepositoryTest** — @DataJpaTest, test findByEmail (found + not found), existsByEmail, auto-generate UUID id and createdAt timestamp
 
@@ -262,7 +262,7 @@ Commit: `feat: add JWT token provider with tests`（使用上述格式，标注 
 
 Commit: `feat: add User entity and repository`（使用上述格式，标注 Subagent）
 
-### Task 1.3: Auth DTOs
+### [x] Task 1.3: Auth DTOs — `9c7229a`
 
 - [ ] **Step 1: Write RegisterRequestValidationTest** — @NotBlank email, @Email format, @Size(min=8) password, test valid req, blank email, invalid email, short password (7 chars), min length (8 chars) accepted
 
@@ -270,7 +270,7 @@ Commit: `feat: add User entity and repository`（使用上述格式，标注 Sub
 
 `git commit -m "feat: add auth DTOs with Jakarta validation（使用上述格式，标注 Subagent）"`
 
-### Task 1.4: UserService + AuthController
+### [x] Task 1.4: UserService + AuthController — `9c7229a`
 
 - [ ] **Step 1: Write UserServiceTest** — mock UserRepository + JwtTokenProvider, BCryptPasswordEncoder. 4 tests: register new → token, register duplicate → RuntimeException("已注册"), login correct → token, login wrong pw → RuntimeException
 
@@ -290,7 +290,7 @@ Commit: `feat: add User entity and repository`（使用上述格式，标注 Sub
 
 Commit: `feat: add UserService and AuthController with register/login/forgot-password`（使用上述格式，标注 Subagent）
 
-### Task 1.5: JWT Filter + Security Config
+### [x] Task 1.5: JWT Filter + Security Config — `9c7229a`
 
 - [ ] **Step 1: Write JwtAuthenticationFilterTest** — test: valid Bearer token sets SecurityContext, calls filterChain; invalid token returns 401
 
@@ -302,7 +302,7 @@ Commit: `feat: add UserService and AuthController with register/login/forgot-pas
 
 Commit: `feat: add JWT auth filter and Spring Security config`（使用上述格式，标注 Subagent）
 
-### Task 1.6: Frontend Auth Store, API Service, Auth Page
+### [x] Task 1.6: Frontend Auth Store, API Service, Auth Page — `4860b03`
 
 - [ ] **Step 1: Create src/services/api.ts** — axios instance with baseURL="", interceptors: request attaches Authorization: Bearer token from authStore, response on 401 calls logout() and redirects to /auth
 
