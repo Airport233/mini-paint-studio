@@ -419,8 +419,8 @@
     document.getElementById('sample-result').style.display = 'none';
     document.getElementById('img-upload').disabled = false;
     document.getElementById('img-upload').value = '';
-    var oldImg = document.getElementById('img-canvas');
-    if (oldImg) oldImg.remove();
+    var oldWrapper = document.getElementById('img-wrapper');
+    if (oldWrapper) oldWrapper.remove();
   }
 
   function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
@@ -462,10 +462,27 @@
         document.getElementById('mf-b').value = pickedB;
         document.getElementById('sample-result').style.display = 'flex';
       });
-      // Replace drop-zone with canvas
+      // Replace drop-zone with canvas in a wrapper
       var dz = document.getElementById('drop-zone');
       dz.style.display = 'none';
-      dz.parentNode.insertBefore(canvas, dz.nextSibling);
+      var wrapper = document.createElement('div');
+      wrapper.id = 'img-wrapper';
+      wrapper.style.cssText = 'position:relative;display:inline-block;max-width:100%';
+      // Close button
+      var closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '&times;';
+      closeBtn.style.cssText = 'position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:12px;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:16px;line-height:1;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center';
+      closeBtn.onclick = function(e) {
+        e.stopPropagation();
+        wrapper.remove();
+        dz.style.display = 'block';
+        document.getElementById('img-upload').value = '';
+        document.getElementById('img-upload').disabled = false;
+        document.getElementById('sample-result').style.display = 'none';
+      };
+      wrapper.appendChild(canvas);
+      wrapper.appendChild(closeBtn);
+      dz.parentNode.insertBefore(wrapper, dz.nextSibling);
       document.getElementById('img-upload').disabled = true;
     };
     img.src = URL.createObjectURL(file);
