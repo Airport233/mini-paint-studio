@@ -394,7 +394,7 @@ Recipe
 
 | 层 | 选型 | 理由 |
 |----|------|------|
-| 前端框架 | React 18 + Vite + TypeScript | HMR 开发效率高，Three.js 调参数需频繁刷新 |
+| 前端方案 | 纯 HTML + CSS + 原生 JS（Open Design 原型直出） + Vite 静态服务 | Open Design 设计的 HTML 原型直接作为前端页面，Vite 做静态文件 serve + API 代理 |
 | 3D 渲染 | @react-three/fiber + drei + three-stdlib | 声明式 Three.js，drei 内置 OrbitControls/GridHelper，three-stdlib 有 STLLoader |
 | UI 设计系统 | [Open Design](https://github.com/nexu-io/open-design) — **Discord** | 见下方详述 |
 | 后端框架 | Spring Boot 3 + JPA | 用户熟悉的技术栈 |

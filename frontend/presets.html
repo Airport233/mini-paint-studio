@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>灯光预设 — HobbyMix</title>
+<style>
+  :root {
+    --bg:           #313338;
+    --surface:      #2b2d31;
+    --surface-warm: #1e1f22;
+    --fg:           #dbdee1;
+    --fg-2:         #f2f3f5;
+    --muted:        #949ba4;
+    --meta:         #80848e;
+    --border:       rgba(255, 255, 255, 0.06);
+    --border-solid: #3f4147;
+    --accent:       #5865f2;
+    --accent-hover: #4752c4;
+    --radius-sm:    4px;
+    --radius-md:    8px;
+    --font:         "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono:         "gg mono", Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    width: 240px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 16px 8px;
+  }
+  nav .brand { font-size: 16px; font-weight: 700; color: var(--fg-2); padding: 0 8px 20px; }
+  nav .brand span { color: var(--accent); }
+  nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    color: var(--meta); text-decoration: none;
+    font-size: 15px; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    margin-bottom: 2px;
+  }
+  nav a .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+  nav a:hover, nav a.active { background: rgba(78,80,88,0.3); color: var(--fg); }
+  nav a.active { background: rgba(78,80,88,0.6); }
+
+  main { flex: 1; overflow-y: auto; padding: 32px 40px; }
+  h1 { font-size: 24px; font-weight: 700; color: var(--fg-2); margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
+  .search {
+    flex: 1; min-width: 200px; max-width: 360px;
+    background: var(--surface-warm); border: 1px solid var(--border-solid);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    color: var(--fg); font-size: 14px; outline: none; font-family: inherit;
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--meta); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface); border-radius: var(--radius-md);
+    border: 1px solid var(--border); overflow: hidden;
+    cursor: pointer; transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover { border-color: var(--border-solid); transform: translateY(-2px); }
+  .card .cover {
+    height: 140px; background: var(--surface-warm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--meta);
+  }
+  .card .cover .nav-icon { width: 36px; height: 36px; }
+  .card .cover img { width: 100%; height: 100%; object-fit: cover; }
+  .card .info { padding: 14px 16px; }
+  .card .name { font-size: 15px; font-weight: 600; color: var(--fg-2); margin-bottom: 4px; }
+  .card .meta-row { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+  .card .type-badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    background: rgba(88, 101, 242, 0.15); color: var(--accent);
+  }
+  .card .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .btn {
+    padding: 6px 14px; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; border: none; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: #4e5058; color: #fff; }
+  .btn-secondary:hover { background: #6d6f78; }
+  .btn-danger { background: transparent; color: var(--muted); border: 1px solid var(--border-solid); }
+  .btn-danger:hover { color: var(--danger); border-color: var(--danger); }
+
+  .empty {
+    text-align: center; padding: 80px 20px; color: var(--muted);
+    display: none;
+  }
+  .empty .icon { font-size: 48px; margin-bottom: 12px; }
+  .icon .nav-icon, .card .icon .nav-icon { width: 32px; height: 32px; }
+  .empty .icon .nav-icon { width: 48px; height: 48px; }
+  .empty p { font-size: 15px; }
+</style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><i data-lucide="palette" class="nav-icon"></i> <span>Hobby</span>Mix</div>
+  <a href="index.html"><i data-lucide="home" class="nav-icon"></i> 首页</a>
+  <a href="paints.html"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
+  <a href="mix.html"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
+  <a href="color-wheel.html"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
+  <a href="preview.html"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
+  <a href="recipes.html"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
+  <a href="presets.html" class="active"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
+</nav>
+
+<main>
+  <h1>灯光预设</h1>
+  <p class="subtitle">保存并回放 3D 场景的多光源配置 — 一键恢复几何体、材质、所有光源</p>
+
+  <div class="toolbar">
+    <input class="search" placeholder="搜索方案名称…" id="search">
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="empty" id="empty">
+    <div class="icon"><i data-lucide="lightbulb" class="nav-icon"></i></div>
+    <p>还没有保存灯光预设，去 3D 预览中设置光源后保存</p>
+  </div>
+</main>
+
+<script>
+  var presets = [
+    { name:'顶光+侧光_暖色_NMM参考', geometry:'球体', lights:3, date:'2026-05-21' },
+    { name:'三灯_金属质感_冷色温', geometry:'立方体', lights:2, date:'2026-05-19' },
+    { name:'极限战士 STL 打光', geometry:'STL · marine.stl', lights:4, date:'2026-05-17' }
+  ];
+
+  function render() {
+    var q = (document.getElementById('search').value || '').toLowerCase();
+    var f = presets.filter(function(p) {
+      return !q || p.name.toLowerCase().indexOf(q) !== -1;
+    });
+    document.getElementById('grid').innerHTML = f.map(function(p) {
+      return '<div class="card">'
+        + '<div class="cover"><i data-lucide="lightbulb" class="nav-icon"></i></div>'
+        + '<div class="info">'
+        + '<div class="name">' + p.name + '</div>'
+        + '<div class="meta-row">'
+        + '<span class="type-badge">' + p.geometry + '</span>'
+        + '<span>' + p.lights + ' 个光源 · ' + p.date + '</span></div>'
+        + '<div class="actions">'
+        + '<a class="btn btn-primary" href="preview.html"><i data-lucide="play" class="nav-icon"></i> 应用</a>'
+        + '<button class="btn btn-danger" onclick="event.stopPropagation();alert(\'[Hook] DELETE /api/lighting-presets/:id\')">删除</button>'
+        + '</div></div></div>';
+    }).join('');
+    document.getElementById('empty').style.display = f.length ? 'none' : 'block';
+  }
+
+  document.getElementById('search').addEventListener('input', render);
+  render();
+lucide.createIcons();
+</script>
+</body>
+</html>

@@ -141,7 +141,7 @@ git add backend/ && git commit -m "chore: scaffold Spring Boot backend with CORS
 Subagent: <name>-s<N>"
 ```
 
-### [x] Task 0.2: Frontend Project Initialization — `3cb5cd3`
+### [x] Task 0.2: Frontend Project Initialization (HTML + Vite) — `3cb5cd3` → 已改为纯 HTML 原型直出方案
 
 - [ ] **Step 1: Write App render test**
 

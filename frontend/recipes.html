@@ -1,0 +1,311 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配方库 — HobbyMix</title>
+<style>
+  :root {
+    --bg:           #313338;
+    --surface:      #2b2d31;
+    --surface-warm: #1e1f22;
+    --fg:           #dbdee1;
+    --fg-2:         #f2f3f5;
+    --muted:        #949ba4;
+    --meta:         #80848e;
+    --border:       rgba(255, 255, 255, 0.06);
+    --border-solid: #3f4147;
+    --accent:       #5865f2;
+    --accent-hover: #4752c4;
+    --radius-sm:    4px;
+    --radius-md:    8px;
+    --font:         "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono:         "gg mono", Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    width: 240px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 16px 8px;
+  }
+  nav .brand { font-size: 16px; font-weight: 700; color: var(--fg-2); padding: 0 8px 20px; }
+  nav .brand span { color: var(--accent); }
+  nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: var(--radius-sm);
+    color: var(--meta); text-decoration: none;
+    font-size: 15px; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    margin-bottom: 2px;
+  }
+  nav a .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+  nav a:hover, nav a.active { background: rgba(78,80,88,0.3); color: var(--fg); }
+  nav a.active { background: rgba(78,80,88,0.6); }
+
+  main { flex: 1; overflow-y: auto; padding: 32px 40px; }
+  h1 { font-size: 24px; font-weight: 700; color: var(--fg-2); margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+  .search {
+    flex: 1; min-width: 200px; max-width: 360px;
+    background: var(--surface-warm); border: 1px solid var(--border-solid);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    color: var(--fg); font-size: 14px; outline: none; font-family: inherit;
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--meta); }
+
+  .chip {
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border-solid);
+    background: transparent; color: var(--muted); transition: 0.15s;
+    user-select: none;
+  }
+  .chip:hover, .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface); border-radius: var(--radius-md);
+    border: 1px solid var(--border); padding: 20px;
+    cursor: pointer; transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover { border-color: var(--border-solid); transform: translateY(-2px); }
+  .card .color-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .card .swatch-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    flex-shrink: 0; border: 2px solid var(--border-solid);
+  }
+  .card .name { font-size: 15px; font-weight: 600; color: var(--fg-2); }
+  .card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .card .tag {
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 500;
+    background: rgba(88, 101, 242, 0.15);
+    color: var(--accent);
+  }
+  .card .meta { font-size: 12px; color: var(--meta); }
+
+  .empty {
+    text-align: center; padding: 80px 20px; color: var(--muted);
+    display: none;
+  }
+  .empty .icon { font-size: 48px; margin-bottom: 12px; }
+  .icon .nav-icon, .card .icon .nav-icon { width: 32px; height: 32px; }
+  .empty .icon .nav-icon { width: 48px; height: 48px; }
+  .empty p { font-size: 15px; }
+
+  /* Detail modal */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: none; justify-content: center; align-items: center; z-index: 100;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius-md);
+    width: 560px; max-width: 95vw; max-height: 85vh;
+    overflow-y: auto; padding: 28px;
+  }
+  .modal h2 { font-size: 20px; font-weight: 700; color: var(--fg-2); margin-bottom: 16px; }
+  .modal .section { margin-bottom: 20px; }
+  .modal .section h4 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .modal .mix-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: var(--radius-sm);
+    background: var(--surface-warm); margin-bottom: 6px;
+  }
+  .modal .mix-dot { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; }
+  .modal .mix-info { flex: 1; font-size: 13px; }
+  .modal .btn-row { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn {
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; border: none; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: #4e5058; color: #fff; }
+  .btn-secondary:hover { background: #6d6f78; }
+  .mix-ratio { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--fg-2); display: block; letter-spacing: 0.04em; }
+  .mix-paints { font-size: 13px; color: var(--muted); display: block; margin-top: 2px; }
+</style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><i data-lucide="palette" class="nav-icon"></i> <span>Hobby</span>Mix</div>
+  <a href="index.html"><i data-lucide="home" class="nav-icon"></i> 首页</a>
+  <a href="paints.html"><i data-lucide="palette" class="nav-icon"></i> 漆料库</a>
+  <a href="mix.html"><i data-lucide="flask-conical" class="nav-icon"></i> 调色引擎</a>
+  <a href="color-wheel.html"><i data-lucide="palette" class="nav-icon"></i> 色彩工具</a>
+  <a href="preview.html"><i data-lucide="box" class="nav-icon"></i> 3D 预览</a>
+  <a href="recipes.html" class="active"><i data-lucide="clipboard-list" class="nav-icon"></i> 配方库</a>
+  <a href="presets.html"><i data-lucide="lightbulb" class="nav-icon"></i> 灯光预设</a>
+</nav>
+
+<main>
+  <h1>配方库</h1>
+  <p class="subtitle">浏览已保存的混色配方 — 标签筛选 + 搜索，点击查看完整方案</p>
+
+  <div class="toolbar">
+    <input class="search" placeholder="搜索配方名称、标签…" id="search">
+    <span class="chip active" data-filter="all">全部</span>
+    <span class="chip" data-filter="蓝色系">蓝色系</span>
+    <span class="chip" data-filter="红色系">红色系</span>
+    <span class="chip" data-filter="高光">高光</span>
+    <span class="chip" data-filter="金属">金属</span>
+    <span class="chip" data-filter="绿色系">绿色系</span>
+    <span class="chip" data-filter="白色系">白色系</span>
+    <span class="chip" data-filter="地形">地形</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="empty" id="empty">
+    <div class="icon"><i data-lucide="clipboard-list" class="nav-icon"></i></div>
+    <p>还没有保存配方，去调色引擎试试</p>
+  </div>
+</main>
+
+<!-- Detail Modal -->
+<div class="overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">配方详情</h2>
+    <div class="section" id="modal-content">
+      <!-- Hook: populated by JS with mix candidates, notes, source image -->
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fmtRatio(entries) { return entries.map(function(e){ return e.paint; }).join(' : ') + ' = ' + entries.map(function(e){ return e.parts; }).join(' : '); }
+  // [Hook] save/load recipes via API
+  function _fmtPaints_unused(entries) { return entries.map(function(e){ return e.paint + '\xd7' + e.parts; }).join(' + '); }
+  var recipes = [
+    { name:"极限战士蓝甲高光", tags:["蓝色系","高光"], target:"#4A7AC2", date:"2026-05-20", mixes:[
+      { entries:[
+        {paint:"AV 70.951 白", parts:3},
+        {paint:"田宫 X-7 红", parts:1},
+        {paint:"蓝", parts:2}
+      ], color:"#4C7DC5" }
+    ]},
+    { name:"NMM 金色高光", tags:["金属","高光"], target:"#D4A574", date:"2026-05-18", mixes:[
+      { entries:[
+        {paint:"郡士 C004", parts:3},
+        {paint:"AV 70.951", parts:2}
+      ], color:"#D8A573" }
+    ]},
+    { name:"暗精皮肤底色", tags:["肤色"], target:"#8B5A3C", date:"2026-05-15", mixes:[
+      { entries:[
+        {paint:"AK 11001", parts:5}
+	      ], color:"#8D5C3E" }
+	    ]},
+	    { name:"血天使红甲", tags:["红色系"], target:"#C83232", date:"2026-05-12", mixes:[
+	      { entries:[
+	        {paint:"田宫 X-7 红", parts:4},
+	        {paint:"田宫 X-1 黑", parts:1}
+	      ], color:"#C23030" },
+	      { entries:[
+	        {paint:"AV 70.909 朱红", parts:3},
+	        {paint:"AV 70.814 深红", parts:2}
+	      ], color:"#C43538" }
+	    ]},
+	    { name:"死亡守卫朽绿", tags:["绿色系"], target:"#6B7C3A", date:"2026-05-08", mixes:[
+	      { entries:[
+	        {paint:"AV 70.881 黄绿", parts:3},
+	        {paint:"田宫 XF-1 哑黑", parts:1},
+	        {paint:"AV 70.951 白", parts:1}
+	      ], color:"#6D7E3C" }
+	    ]},
+	    { name:"白色疤痕冷白", tags:["白色系","高光"], target:"#E8E8E8", date:"2026-05-02", mixes:[
+	      { entries:[
+	        {paint:"AV 70.951 白", parts:5},
+	        {paint:"AV 70.904 深蓝", parts:1}
+	      ], color:"#E6E6EA" }
+	    ]},
+	    { name:"熔岩地台渐变", tags:["地形","红色系","金属"], target:"#FF6A00", date:"2026-04-28", mixes:[
+	      { entries:[
+	        {paint:"田宫 X-6 橙", parts:3},
+	        {paint:"田宫 X-7 红", parts:2},
+	        {paint:"田宫 X-12 金", parts:1}
+	      ], color:"#FF6C08" }
+	    ]},
+	    { name:"铁手军团冷铁", tags:["金属"], target:"#7A7A80", date:"2026-04-20", mixes:[
+	      { entries:[
+	        {paint:"郡士 C004 黑铁", parts:4},
+	        {paint:"郡士 C001 白", parts:1}
+	      ], color:"#7B7B82" }
+	    ]}
+	  ];
+  var filter = 'all';
+
+  function render() {
+    var q = (document.getElementById('search').value || '').toLowerCase();
+    var f = recipes.filter(function(r) {
+      if (filter !== 'all' && r.tags.indexOf(filter) === -1) return false;
+      if (q && r.name.toLowerCase().indexOf(q) === -1 && r.tags.join(' ').toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    document.getElementById('grid').innerHTML = f.map(function(r) { return '<div class="card" onclick="showDetail(\'' + r.name + '\')">' + '<div class="color-row"><div class="swatch-dot" style="background:' + r.target + '"></div>' + '<div class="name">' + r.name + '</div></div>' + '<div class="tags">' + r.tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' + '<div class="meta">' + r.date + '</div></div>'; }).join('');
+    document.getElementById('empty').style.display = f.length ? 'none' : 'block';
+  }
+
+  document.getElementById('search').addEventListener('input', render);
+  document.querySelectorAll('.chip').forEach(function(c) {
+    c.addEventListener('click', function() {
+      document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
+      c.classList.add('active');
+      filter = c.dataset.filter;
+      render();
+    });
+  });
+
+  function showDetail(name) {
+    var r = recipes.find(function(x) { return x.name === name; });
+    if (!r) return;
+    document.getElementById('modal-title').textContent = r.name;
+    document.getElementById('modal-content').innerHTML =
+      '<div class="section"><h4>目标颜色</h4>'
+      + '<div style="display:flex;align-items:center;gap:12px">'
+      + '<div style="width:48px;height:48px;border-radius:8px;background:' + r.target + ';border:1px solid var(--border-solid)"></div>'
+      + '<span style="font-family:var(--mono)">' + r.target + '</span></div></div>'
+      + '<div class="section"><h4>混色方案快照</h4>'
+      + r.mixes.map(function(m) { return '<div class="mix-row"><div class="mix-dot" style="background:' + m.color + '"></div>' + '<div class="mix-info"><span class="mix-ratio">' + fmtRatio(m.entries) + '</span> </div></div>'; }).join('') + '</div>'
+      + '<div class="section"><h4>标签</h4>'
+      + r.tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join(' ')
+      + '</div>'
+      + '<div class="section"><h4>备注</h4><p style="font-size:13px;color:var(--muted)">[Hook] 用户备注文本</p></div>';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+  document.getElementById('modal-overlay').addEventListener('mousedown', function(e) {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+  render();
+lucide.createIcons();
+</script>
+</body>
+</html>
