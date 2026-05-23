@@ -118,9 +118,12 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 ## 学到的教训
 
-1. **HTML 原型直出 > React 重写**: Open Design 的 HTML 原型格式完整、CSS 精确，转换为 React 会引入格式偏差。直接用原型 + 原生 JS 调用后端 API 更高效
-2. **Vite MPA 模式**: SPA 的 `appType` 默认不适合多页面应用，需显式设置 `appType: 'mpa'` 并结合自定义中间件做 clean URL
-3. **Lucide CDN vs npm**: CDN 版 lucide 用 `data-lucide` 属性 + `lucide.createIcons()` 批量替换，适合原生 HTML；npm 版 lucide-react 适合 React
-4. **共享组件**: 原生 JS 通过 IIFE + `document.getElementById` 注入 HTML 可实现跨页面组件共享，关键是脚本要在 DOM 就绪后执行
-5. **CORS + Spring Security**: WebMvcConfigurer 的 CORS 配置在 Spring Security filter 之后，必须在 SecurityFilterChain 中显式 `.cors()` + `CorsConfigurationSource`
-6. **auth guard 顺序**: `<script>` 标签位置决定执行顺序——auth guard 要在 DOM 就绪后执行，layout.js 要在 body 底部执行
+1. **Agent 有时很轴，不知道变通**：把 Open Design 的 HTML 原型转成 React 组件时，格式一再错位、图标丢失、布局塌陷。我们反复修了七八轮，Agent 始终没提出"既然原型已经是完整 HTML，为什么不直接用原生 JS 调用后端 API"。直到我主动质疑"就没有能直接加载 HTML 的技术栈吗"，它才立刻切换方案——十几分钟搞定，格式 100% 匹配。教训：Agent 会沿着一个方向死磕，你作为人类需要识别"这条路本身可能不对"，而不是跟着它在细节里打转。
+
+2. **不能过分相信 Agent，即使它是专门做这件事的**：我把 SPEC.md 和 PLAN.md 投喂给 Open Design 让它做前端。它的设计系统（Discord 令牌）和 HTML 原型本来设计得很好，可视化编辑也是它的优势。但在我让它"生成完整前端"后，它:
+   - 完全放弃了可视化预览，输出了一个无法直接预览的 React 工程
+   - 自作主张安装了全套 React + TypeScript + Three.js 依赖（node_modules 超过 200MB）
+   - 消耗了大量 Token，产出的代码有多处 TS 错误和与 SPEC 不一致的地方
+   - 我本可以用 Open Design 的 Web 界面逐页设计、预览、调整，再导出 HTML 给我集成——这才是它的正确用法。教训：专业工具也要在它的能力边界内使用。让设计工具做设计，让编码 Agent 写逻辑，不要越界。
+
+3. **SPEC 写完不是终点——冷启动验证是真正的试金石**：我们花了几小时写完 SPEC+PLAN，觉得已经事无巨细。结果一个陌生 Agent 刚读第一行就卡住了——"REQUIRED SUB-SKILL 这个工具我没有"。我们自以为清晰的指令，对另一个 Agent 完全是黑话。冷启动暴露的不只是措辞问题，更是一种幻觉：你以为 spec 写清楚了，其实大量上下文只存在于你脑子和主 Agent 的对话记录里。
