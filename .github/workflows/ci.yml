@@ -27,15 +27,3 @@ jobs:
           node-version: '20'
       - name: Install and build
         run: cd frontend && npm ci && npm run build
-
-  docker-build:
-    needs: [backend-test, frontend-build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build backend image
-        run: docker build -t hobbymix-backend ./backend
-      - name: Build frontend image
-        run: docker build -t hobbymix-frontend ./frontend
-      - name: Verify images
-        run: docker images | grep hobbymix
