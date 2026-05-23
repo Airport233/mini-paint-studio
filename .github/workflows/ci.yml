@@ -16,7 +16,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Run backend tests
-        run: cd backend && ./mvnw test -Dspring.profiles.active=dev
+        run: cd backend && bash ./mvnw test -Dspring.profiles.active=dev
 
   frontend-build:
     runs-on: ubuntu-latest
