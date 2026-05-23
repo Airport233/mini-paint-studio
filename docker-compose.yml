@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: minipaint
+      POSTGRES_PASSWORD: minipaint
+      POSTGRES_DB: minipaint
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/minipaint
+      DB_USERNAME: minipaint
+      DB_PASSWORD: minipaint
+      JWT_SECRET: change-me-in-production
+    volumes:
+      - uploads:/app/uploads
+      - stl_files:/app/stl-files
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
+  uploads:
+  stl_files:
