@@ -145,7 +145,22 @@
 
 ### 5.2 对 SPEC.md / PLAN.md 的修订
 
-**PLAN.md 修订**：顶部描述从 `REQUIRED SUB-SKILL: Use superpowers:...` 改为兼容 standalone 与非 Superpowers 环境的说明（"If running standalone, implement tasks directly"）。
+**PLAN.md 修订（唯一的 spec 缺陷修复）**：
+
+冷启动 agent 的第一条疑问暴露了 PLAN.md 头部描述的环境假设问题。修订如下：
+
+```diff
+-# Mini Paint Studio Implementation Plan
+-
+-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task.
++# Mini Paint Studio Implementation Plan
++
++> **For agentic workers:** If running inside Superpowers, use `subagent-driven-development` or `executing-plans` skill. If running standalone (no Superpowers), implement tasks directly in this session — TDD steps and code are self-contained; skip skill invocations but follow the same red-green-refactor flow.
+```
+
+**修订理由**：原始措辞 `REQUIRED SUB-SKILL` 对非 Superpowers 环境的 agent 是死胡同——它没有这个工具入口，会停下来问。新的措辞同时兼容 Superpowers 和 standalone 两种执行模式。
+
+**SPEC.md**：无需修订。冷启动 agent 未对功能规约、API 定义、数据模型提出任何疑问，说明 SPEC 内容足够自包含。
 
 ### 5.3 冷启动总结
 
