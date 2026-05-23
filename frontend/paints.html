@@ -322,7 +322,7 @@
       </div>
       <canvas class="color-canvas" id="img-canvas" style="display:none"></canvas>
     </div>
-    <div class="sample-result" id="sample-result">
+    <div class="sample-result" id="sample-result" style="display:none">
       <span class="label-text">取色结果</span>
       <div class="cp-swatch" id="mf-swatch" style="background:rgb(42,44,47)"></div>
       <div class="cp-rgb">
@@ -416,6 +416,9 @@
     document.getElementById('mf-g').value = '-';
     document.getElementById('mf-b').value = '-';
     document.getElementById('drop-zone').style.display = 'block';
+    document.getElementById('sample-result').style.display = 'none';
+    document.getElementById('img-upload').disabled = false;
+    document.getElementById('img-upload').value = '';
     var oldImg = document.getElementById('img-canvas');
     if (oldImg) oldImg.remove();
   }
@@ -457,9 +460,13 @@
         document.getElementById('mf-r').value = pickedR;
         document.getElementById('mf-g').value = pickedG;
         document.getElementById('mf-b').value = pickedB;
-        document.getElementById('drop-zone').style.display = 'none';
+        document.getElementById('sample-result').style.display = 'flex';
       });
-      document.getElementById('drop-zone').after(canvas);
+      // Replace drop-zone with canvas
+      var dz = document.getElementById('drop-zone');
+      dz.style.display = 'none';
+      dz.parentNode.insertBefore(canvas, dz.nextSibling);
+      document.getElementById('img-upload').disabled = true;
     };
     img.src = URL.createObjectURL(file);
   });
