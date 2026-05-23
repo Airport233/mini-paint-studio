@@ -43,4 +43,5 @@
     navLinks +
     userRow +
     '</nav>';
+  if (window.lucide) { lucide.createIcons(); }
 })();
