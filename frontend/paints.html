@@ -315,8 +315,8 @@
     </div>
     <div class="field">
       <label>颜色 — 拍照取色</label>
-      <div class="drop-zone" id="drop-zone">
-        <input type="file" accept="image/*" id="img-upload" hidden>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('img-upload').click()">
+        <input type="file" accept="image/jpeg,image/png,image/webp" id="img-upload" hidden>
         <i data-lucide="image" style="width:32px;height:32px;color:var(--meta)"></i>
         <p>点击上传或拖拽漆料照片到此处</p>
       </div>
@@ -416,13 +416,24 @@
     document.getElementById('mf-g').value = '-';
     document.getElementById('mf-b').value = '-';
     document.getElementById('drop-zone').style.display = 'block';
-    var oldImg = document.getElementById('picker-img');
+    var oldImg = document.getElementById('img-canvas');
     if (oldImg) oldImg.remove();
   }
 
   function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
-  document.getElementById('paint-image-input').addEventListener('change', function(e) {
+  // Drag & Drop
+  var dropZone = document.getElementById('drop-zone');
+  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    var file = e.dataTransfer.files[0];
+    if (file) document.getElementById('img-upload').files = e.dataTransfer.files;
+    document.getElementById('img-upload').dispatchEvent(new Event('change'));
+  });
+
+  document.getElementById('img-upload').addEventListener('change', function(e) {
     var file = e.target.files[0];
     if (!file) return;
     var img = new Image();
@@ -435,7 +446,7 @@
       canvas.style.maxWidth = '100%';
       canvas.style.borderRadius = '8px';
       canvas.style.cursor = 'crosshair';
-      canvas.id = 'picker-img';
+      canvas.id = 'img-canvas';
       canvas.addEventListener('click', function(ce) {
         var rect = canvas.getBoundingClientRect();
         var sx = Math.round((ce.offsetX / rect.width) * canvas.width);
