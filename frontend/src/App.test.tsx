@@ -9,6 +9,6 @@ describe('App', () => {
 
   it('renders auth page when unauthenticated', () => {
     render(<App />);
-    expect(screen.getByText('涂装工作站')).toBeTruthy();
+    expect(screen.getByText((_: string, el: Element | null) => el?.textContent === 'HobbyMix')).toBeTruthy();
   });
 });
