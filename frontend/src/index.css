@@ -74,7 +74,7 @@ nav.sidebar .user-row .logout:hover { color:var(--danger); }
 
 /* Card grid */
 .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
-.card { background:var(--surface); border-radius:var(--radius-md); border:1px solid var(--border); padding:20px; transition:border-color .2s,transform .2s; text-decoration:none; color:inherit; display:flex; gap:12px; cursor:pointer; }
+.card { background:var(--surface); border-radius:var(--radius-md); border:1px solid var(--border); padding:24px; cursor:pointer; transition:border-color .2s,transform .2s; text-decoration:none; display:flex; flex-direction:column; gap:10px; }
 .card:hover { border-color:var(--border-solid); transform:translateY(-2px); }
 .paint-swatch { width:40px; height:40px; border-radius:var(--radius-sm); flex-shrink:0; border:1px solid var(--border-solid); }
 .card-info { flex:1; min-width:0; }

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchPaints, createPaint, deletePaint } from '../../services/paintService';
-import type { Paint } from '../../types/paint';
+import type { Paint, Brand } from '../../types/paint';
 import { Trash2 } from 'lucide-react';
 
-const BRANDS = ['GW', 'AV', 'AK', 'GSW', 'Scale75', 'ArmyPainter', 'Other'] as const;
+const BRANDS: Brand[] = ['GW', 'AV', 'AK', 'GSW', 'Scale75', 'ArmyPainter', 'Other'];
 
 function rgbToHex(r: number, g: number, b: number): string {
   return '#' + [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
@@ -16,7 +16,7 @@ export default function PaintListPage() {
   const [search, setSearch] = useState('');
 
   const [showAdd, setShowAdd] = useState(false);
-  const [addBrand, setAddBrand] = useState<string>('GW');
+  const [addBrand, setAddBrand] = useState<Brand>('GW');
   const [addCode, setAddCode] = useState('');
   const [addName, setAddName] = useState('');
   const [addR, setAddR] = useState(128); const [addG, setAddG] = useState(128); const [addB, setAddB] = useState(128);
@@ -70,7 +70,7 @@ export default function PaintListPage() {
     if (!addCode.trim() || !addName.trim()) return;
     setAddSaving(true);
     try {
-      await createPaint({ brand: addBrand as any, code: addCode, name: addName, r: addR, g: addG, b: addB });
+      await createPaint({ brand: addBrand, code: addCode, name: addName, r: addR, g: addG, b: addB });
       setShowAdd(false); setPickedColor(null); setAddCode(''); setAddName('');
       load();
     } catch { /* ignore */ }
@@ -135,7 +135,7 @@ export default function PaintListPage() {
             <div className="field-row">
               <div className="field">
                 <label>品牌</label>
-                <select value={addBrand} onChange={(e) => setAddBrand(e.target.value)}
+                <select value={addBrand} onChange={(e) => setAddBrand(e.target.value as Brand)}
                   style={{ width: '100%', padding: '10px 12px', background: 'var(--surface-warm)', border: '1px solid var(--border-solid)', borderRadius: 'var(--radius-sm)', color: 'var(--fg)', fontSize: 14, fontFamily: 'inherit', outline: 'none' }}>
                   {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
