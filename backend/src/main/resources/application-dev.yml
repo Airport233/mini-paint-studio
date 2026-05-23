@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:minipaint;DB_CLOSE_DELAY=-1
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+file-storage:
+  upload-dir: ./target/uploads
+  stl-dir: ./target/stl-files

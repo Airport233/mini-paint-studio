@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/minipaint
+    username: ${DB_USERNAME:minipaint}
+    password: ${DB_PASSWORD:minipaint}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-use-real-env-var-long-enough-key-for-hs256-algorithm-specification}
+  expiration-ms: 86400000
+
+file-storage:
+  upload-dir: ${FILE_STORAGE_PATH:./uploads}
+  stl-dir: ${STL_STORAGE_PATH:./stl-files}
