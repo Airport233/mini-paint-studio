@@ -84,4 +84,9 @@ public class Paint {
     public void setB(int b) { this.b = b; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+
+    public int getHue() {
+        float[] hsb = java.awt.Color.RGBtoHSB(r, g, b, null);
+        return Math.round(hsb[0] * 360);
+    }
 }
