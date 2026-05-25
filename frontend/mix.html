@@ -497,7 +497,8 @@ lucide.createIcons();
 <div class="field"><label>预览</label><div id="save-preview" style="width:64px;height:64px;border-radius:8px;background:#808080;margin-bottom:8px"></div></div>
 <div class="field"><label>配比（只读）</label><input type="text" id="save-parts" readonly style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--muted);font-size:12px;font-family:inherit"></div>
 <div class="field"><label>名称</label><input type="text" id="save-name" placeholder="配方名称" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
-<div class="field"><label>标签（逗号分隔）</label><input type="text" id="save-tags" placeholder="如: 蓝色系,高光" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
+<div class="field"><label>标签（逗号分隔）</label><input type="text" id="save-tags" list="tag-list" placeholder="如: 蓝色系,高光" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
+<datalist id="tag-list"><option value="蓝色系"><option value="红色系"><option value="金属"><option value="高光"><option value="阴影"><option value="肤色"><option value="NMM"></datalist>
 <div class="field"><label>备注</label><input type="text" id="save-notes" placeholder="可选备注" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
 <input type="hidden" id="save-data">
 <div class="modal-actions">
