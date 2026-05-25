@@ -155,6 +155,30 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 ---
 
+## 2026-05-25 — Phase 5: STL 支持
+
+| Task | Commit | 说明 |
+|------|--------|------|
+| 5.1 | `e7f199a` | FileStorageService 本地文件系统实现 |
+| 5.2 | `08cdf19` | StlFile 实体 + Repository + StlService + StlController |
+| 5.3 | `d3b27cc` | 前端 STL 上传/列表/加载/删除 + SHA256 去重 + 双击改名 |
+
+- **Worktree**: 初版 `feature/stl-support` / 后续直接在 main 迭代
+- **后端**: FileStorageService (store/delete/toAccessUrl), StlFile (userId + fileHash), StlController (upload/list/download/update/delete), SHA256 去重 (409 中文提示)
+- **前端**: STLLoader 本地解析 + 服务端上传, chip 样式列表 (× 删除 + 双击改名), 文件名截断 (20 字符), 选中高亮, 下载端点 `/api/stl/{id}/download`
+
+### Phase 5 人工验证与修复
+
+| 问题 | 状态 |
+|------|------|
+| api.js 未在 preview.html 加载 → STL 函数未定义 | 已修复 |
+| STL chip 样式不对齐 | 已修复 (截断文件名) |
+| 双击改名实现 | 已完成 |
+| SHA256 去重 | 已完成 |
+| 重复文件前端提示 | 已完成 |
+
+---
+
 ## 2026-05-25 — Phase 3: 混色引擎
 
 | Task | Commit | 说明 |
