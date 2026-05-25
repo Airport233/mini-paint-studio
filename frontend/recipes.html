@@ -238,36 +238,6 @@
     });
   });
   loadRecipes();
-    var f = recipes.filter(function(r) {
-      if (filter !== 'all' && r.tags.indexOf(filter) === -1) return false;
-      if (q && r.name.toLowerCase().indexOf(q) === -1 && r.tags.join(' ').toLowerCase().indexOf(q) === -1) return false;
-      return true;
-    });
-    document.getElementById('grid').innerHTML = f.map(function(r) { return '<div class="card" onclick="showDetail(\'' + r.name + '\')">' + '<div class="color-row"><div class="swatch-dot" style="background:' + r.target + '"></div>' + '<div class="name">' + r.name + '</div></div>' + '<div class="tags">' + r.tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join('') + '</div>' + '<div class="meta">' + r.date + '</div></div>'; }).join('');
-    document.getElementById('empty').style.display = f.length ? 'none' : 'block';
-  }
-
-  document.getElementById('search').addEventListener('input', render);
-  document.querySelectorAll('.chip').forEach(function(c) {
-    c.addEventListener('click', function() {
-      document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
-      c.classList.add('active');
-      filter = c.dataset.filter;
-      render();
-    });
-  });
-
-  function showDetail(name) {
-    var r = recipes.find(function(x) { return x.name === name; });
-    if (!r) return;
-    document.getElementById('modal-title').textContent = r.name;
-    document.getElementById('modal-content').innerHTML =
-      '<div class="section"><h4>目标颜色</h4>'
-      + '<div style="display:flex;align-items:center;gap:12px">'
-      + '<div style="width:48px;height:48px;border-radius:8px;background:' + r.target + ';border:1px solid var(--border-solid)"></div>'
-      + '<span style="font-family:var(--mono)">' + r.target + '</span></div></div>'
-      + '<div class="section"><h4>混色方案快照</h4>'
-      + r.mixes.map(function(m) { return '<div class="mix-row"><div class="mix-dot" style="background:' + m.color + '"></div>' + '<div class="mix-info"><span class="mix-ratio">' + fmtRatio(m.entries) + '</span> </div></div>'; }).join('') + '</div>'
       + '<div class="section"><h4>标签</h4>'
       + r.tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join(' ')
       + '</div>'
