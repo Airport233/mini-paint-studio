@@ -378,45 +378,20 @@
   // ---- Compute (direct fetch, no dependency on api.js) ----
   var lastMixResult = null;
 
-  // Tag chip selector
   var PREDEFINED_TAGS = ['蓝色系','红色系','绿色系','金属','高光','阴影','肤色','NMM'];
   var selectedTags = [];
-  function addTag(tag) {
-    if (selectedTags.indexOf(tag) >= 0) return;
-    selectedTags.push(tag);
-    renderTagChips();
-  }
-  function removeTag(tag) {
-    var i = selectedTags.indexOf(tag);
-    if (i >= 0) selectedTags.splice(i, 1);
-    renderTagChips();
-  }
+  function addTag(t) { if (selectedTags.indexOf(t) < 0) { selectedTags.push(t); renderTagChips(); } }
+  function removeTag(t) { var i = selectedTags.indexOf(t); if (i >= 0) selectedTags.splice(i, 1); renderTagChips(); }
   function renderTagChips() {
-    var chipsEl = document.getElementById('tag-chips');
-    if (!chipsEl) return;
-    chipsEl.innerHTML = selectedTags.map(function(t) {
-      return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--accent);color:#fff">' + t + '<span onclick="event.stopPropagation();removeTag(\'' + t + '\')" style="cursor:pointer;font-size:13px;line-height:1">&times;</span></span>';
-    }).join('');
+    var el = document.getElementById('tag-chips'); if (!el) return;
+    el.innerHTML = selectedTags.map(function(t) { return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--accent);color:#fff">' + t + '<span onclick="event.stopPropagation();removeTag(\'' + t + '\')" style="cursor:pointer;font-size:13px;line-height:1">&times;</span></span>'; }).join('');
     document.getElementById('save-tags').value = selectedTags.join(',');
   }
-  var tagInput = document.getElementById('tag-input');
-  var tagDropdown = document.getElementById('tag-dropdown');
-  if (tagInput) {
-    tagInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput.value.trim()); tagInput.value = ''; tagDropdown.style.display = 'none'; }
-    });
-    tagInput.addEventListener('input', function() {
-      var q = tagInput.value.toLowerCase();
-      var matches = PREDEFINED_TAGS.filter(function(t) { return t.toLowerCase().includes(q) && selectedTags.indexOf(t) < 0; });
-      tagDropdown.innerHTML = matches.map(function(t) {
-        return '<div style="padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg)" onmousedown="event.preventDefault()" onclick="addTag(\'' + t + '\');document.getElementById(\'tag-input\').value=\'\';document.getElementById(\'tag-dropdown\').style.display=\'none\'">' + t + '</div>';
-      }).join('');
-      tagDropdown.style.display = matches.length ? 'block' : 'none';
-    });
-    document.addEventListener('click', function(e) { if (!e.target.closest('#tag-input') && !e.target.closest('#tag-dropdown')) tagDropdown.style.display = 'none'; });
-  }
+  var ti = document.getElementById('tag-input'), td = document.getElementById('tag-dropdown');
+  if (ti) { ti.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(ti.value.trim()); ti.value = ''; td.style.display = 'none'; } });
+    ti.addEventListener('input', function() { var q = ti.value.toLowerCase(); var m = PREDEFINED_TAGS.filter(function(t) { return t.toLowerCase().includes(q) && selectedTags.indexOf(t) < 0; }); td.innerHTML = m.map(function(t) { return '<div style="padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg)" onmousedown="event.preventDefault()" onclick="addTag(\'' + t + '\');ti.value=\'\';td.style.display=\'none\'">' + t + '</div>'; }).join(''); td.style.display = m.length ? 'block' : 'none'; });
+    document.addEventListener('click', function(e) { if (!e.target.closest('#tag-input') && !e.target.closest('#tag-dropdown')) td.style.display = 'none'; }); }
 
-  function openSaveModal(index) {
   function openSaveModal(index) {
     if (!lastMixResult) { alert('请先计算混色方案'); return; }
     var candidates = lastMixResult.candidates || [];

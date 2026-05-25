@@ -239,13 +239,6 @@
   });
   loadRecipes();
       + '<div class="section"><h4>标签</h4>'
-      + r.tags.map(function(t) { return '<span class="tag">' + t + '</span>'; }).join(' ')
-      + '</div>'
-      + '<div class="section"><h4>备注</h4><p style="font-size:13px;color:var(--muted)">[Hook] 用户备注文本</p></div>';
-    document.getElementById('modal-overlay').classList.add('open');
-  }
-
-  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
   document.getElementById('modal-overlay').addEventListener('mousedown', function(e) {
     if (e.target === e.currentTarget) closeModal();
   });
