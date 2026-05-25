@@ -1109,8 +1109,8 @@ document.getElementById('light-list').addEventListener('input', function(e) {
   if (e.target.classList.contains('light-pos-x') || e.target.classList.contains('light-pos-y') || e.target.classList.contains('light-pos-z')) {
     light.position.set(
       parseFloat(row.querySelector('.light-pos-x').value),
-      parseFloat(row.querySelector('.light-pos-y').value),
-      parseFloat(row.querySelector('.light-pos-z').value)
+      parseFloat(row.querySelector('.light-pos-z').value),
+      parseFloat(row.querySelector('.light-pos-y').value)
     );
   }
   rebuildMarkers();
@@ -1301,7 +1301,7 @@ function syncSceneFromUI() {
     scene.add(light);
     light.color.setRGB(r2 / 255, g2 / 255, b2 / 255);
     light.intensity = intensity;
-    light.position.set(px2, py2, pz2);
+    light.position.set(px2, pz2, py2);
   });
   rebuildMarkers();
 }
