@@ -1191,10 +1191,10 @@ renderer.domElement.addEventListener('wheel', function (e) {
 }, { passive: false });
 
 // ── Model transform controls ──
-var rotationGroup = new THREE.Group();
+var modelParent = new THREE.Group();
 scene.remove(model);
-rotationGroup.add(model);
-scene.add(rotationGroup);
+scene.add(modelParent);
+modelParent.add(model);
 model.position.set(0, 0, 0);
 
 ['rot-x', 'rot-y', 'rot-z'].forEach(function (id, i) {
@@ -1205,7 +1205,7 @@ model.position.set(0, 0, 0);
       var rx = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-x').value) || 0);
       var ry = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-y').value) || 0);
       var rz = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-z').value) || 0);
-      rotationGroup.rotation.set(rx, ry, rz);
+      modelParent.rotation.set(rx, ry, rz);
       if (label) label.textContent = el.value + '°';
     });
   }
@@ -1215,7 +1215,7 @@ var heightSlider = document.getElementById('height-offset');
 var heightVal = document.getElementById('height-val');
 if (heightSlider) {
   heightSlider.addEventListener('input', function () {
-    model.position.y = parseFloat(heightSlider.value);
+    modelParent.position.y = parseFloat(heightSlider.value);
     if (heightVal) heightVal.textContent = parseFloat(heightSlider.value).toFixed(1);
   });
 }
