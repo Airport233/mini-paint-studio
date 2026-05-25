@@ -34,7 +34,7 @@
   var userRow = token
     ? '<div class="user-row"><i data-lucide="circle-user" class="nav-icon"></i> <span>' +
       (email || '') +
-      '</span><span class="logout" onclick="window.logout()" title="登出"><i data-lucide="log-out" class="nav-icon"></i></span></div>'
+      '</span><span class="logout" onclick="localStorage.removeItem(\'token\');localStorage.removeItem(\'email\');location.href=\'/auth\'" title="登出"><i data-lucide="log-out" class="nav-icon" style="pointer-events:none"></i></span></div>'
     : '<div class="user-row"><i data-lucide="circle-user" class="nav-icon"></i> <span>未登录</span><a class="logout" href="/auth">登录</a></div>';
 
   document.getElementById('sidebar').innerHTML =
