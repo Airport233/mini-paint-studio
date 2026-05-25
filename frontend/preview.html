@@ -395,6 +395,27 @@
         <p class="hook-note" id="stl-status">[Hook] 读取 STL &rarr; Three.js BufferGeometry</p>
       </div>
 
+      <!-- Transform -->
+      <div class="panel">
+        <h3>变换</h3>
+        <div class="slider-row">
+          <label>旋转 X <span id="rot-x-val">0°</span></label>
+          <input type="range" min="-180" max="180" value="0" step="1" id="rot-x">
+        </div>
+        <div class="slider-row">
+          <label>旋转 Y <span id="rot-y-val">0°</span></label>
+          <input type="range" min="-180" max="180" value="0" step="1" id="rot-y">
+        </div>
+        <div class="slider-row">
+          <label>旋转 Z <span id="rot-z-val">0°</span></label>
+          <input type="range" min="-180" max="180" value="0" step="1" id="rot-z">
+        </div>
+        <div class="slider-row">
+          <label>高度偏移 <span id="height-val">0.0</span></label>
+          <input type="range" min="-3" max="3" value="0" step="0.1" id="height-offset">
+        </div>
+      </div>
+
       <!-- Lights -->
       <div class="panel">
         <h3>光源 <span style="font-weight:400;font-size:11px;color:var(--meta)">1&ndash;6 个</span></h3>
@@ -1074,22 +1095,130 @@ if (matNative) {
 
 // ── Light markers ──
 var lightMarkers = [];
-function updateLightMarkers() {
+// ── Light system (markers, selection, drag, scroll) ──
+var selectedLight = null;
+var lightMarkers = [];
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+var isDragging = false;
+var dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0));
+
+function getLights() {
+  var lights = [];
+  scene.children.forEach(function (c) {
+    if (c.isDirectionalLight || c.isPointLight) lights.push(c);
+  });
+  return lights;
+}
+
+function rebuildMarkers() {
   lightMarkers.forEach(function (m) { scene.remove(m); });
   lightMarkers = [];
-  scene.children.forEach(function (child) {
-    if (child.isDirectionalLight || child.isPointLight) {
-      var marker = new THREE.Mesh(
-        new THREE.SphereGeometry(0.1, 8, 8),
-        new THREE.MeshBasicMaterial({ color: child.color })
-      );
-      marker.position.copy(child.position);
-      scene.add(marker);
-      lightMarkers.push(marker);
-    }
+  var lights = getLights();
+  lights.forEach(function (light, i) {
+    var geo = new THREE.SphereGeometry(0.12, 12, 12);
+    var mat = new THREE.MeshBasicMaterial({ color: light === selectedLight ? 0xffff00 : light.color });
+    var marker = new THREE.Mesh(geo, mat);
+    marker.position.copy(light.position);
+    marker.userData = { lightIndex: i, light: light };
+    scene.add(marker);
+    lightMarkers.push(marker);
   });
 }
-updateLightMarkers();
+rebuildMarkers();
+
+// Click: select / deselect
+renderer.domElement.addEventListener('pointerdown', function (e) {
+  if (e.target !== renderer.domElement) return;
+  var rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  var hits = raycaster.intersectObjects(lightMarkers);
+  if (hits.length > 0) {
+    selectedLight = hits[0].object.userData.light;
+    isDragging = true;
+    controls.enabled = false;
+    // Set drag plane perpendicular to camera, passing through light position
+    var camDir = new THREE.Vector3();
+    camera.getWorldDirection(camDir);
+    dragPlane.set(camDir.negate(), 1);
+    dragPlane.constant = -selectedLight.position.dot(dragPlane.normal);
+    rebuildMarkers();
+  } else {
+    selectedLight = null;
+    controls.enabled = true;
+    rebuildMarkers();
+  }
+});
+
+// Drag
+renderer.domElement.addEventListener('pointermove', function (e) {
+  if (!isDragging || !selectedLight) return;
+  var rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  var intersection = new THREE.Vector3();
+  raycaster.ray.intersectPlane(dragPlane, intersection);
+  if (intersection) {
+    selectedLight.position.copy(intersection);
+    lightMarkers.forEach(function (m) {
+      if (m.userData.light === selectedLight) m.position.copy(intersection);
+    });
+  }
+});
+
+// Release
+renderer.domElement.addEventListener('pointerup', function () {
+  isDragging = false;
+});
+
+// Scroll: move selected light along camera ray
+renderer.domElement.addEventListener('wheel', function (e) {
+  if (!selectedLight) return;
+  e.preventDefault();
+  e.stopPropagation();
+  var dir = new THREE.Vector3();
+  camera.getWorldDirection(dir);
+  var delta = e.deltaY > 0 ? 0.3 : -0.3;
+  selectedLight.position.addScaledVector(dir, delta);
+  lightMarkers.forEach(function (m) {
+    if (m.userData.light === selectedLight) m.position.copy(selectedLight.position);
+  });
+}, { passive: false });
+
+// ── Model transform controls ──
+var rotationGroup = new THREE.Group();
+scene.remove(model);
+rotationGroup.add(model);
+scene.add(rotationGroup);
+model.position.set(0, 0, 0);
+
+['rot-x', 'rot-y', 'rot-z'].forEach(function (id, i) {
+  var el = document.getElementById(id);
+  var label = document.getElementById(id + '-val');
+  if (el) {
+    el.addEventListener('input', function () {
+      var rx = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-x').value) || 0);
+      var ry = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-y').value) || 0);
+      var rz = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-z').value) || 0);
+      rotationGroup.rotation.set(rx, ry, rz);
+      if (label) label.textContent = el.value + '°';
+    });
+  }
+});
+
+var heightSlider = document.getElementById('height-offset');
+var heightVal = document.getElementById('height-val');
+if (heightSlider) {
+  heightSlider.addEventListener('input', function () {
+    model.position.y = parseFloat(heightSlider.value);
+    if (heightVal) heightVal.textContent = parseFloat(heightSlider.value).toFixed(1);
+  });
+}
 
 // ── Canvas picker ──
 var eyedropperBtn = document.getElementById('btn-eyedropper-canvas');
