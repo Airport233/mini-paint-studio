@@ -456,57 +456,6 @@
             </div>
           </div>
 
-          <div class="light-row" data-light-id="1">
-            <div class="light-row-header">
-              <span class="light-color-dot" style="background:#B8D4F0"></span>
-              <div class="light-info">
-                <div class="light-name">光源 1</div>
-                <div class="light-meta">方向光 &middot; 强度 40% &middot; 6500K</div>
-              </div>
-              <span class="light-type-badge">方向光</span>
-              <i data-lucide="chevron-down" class="light-chevron"></i>
-            </div>
-            <div class="light-drawer">
-              <div class="slider-row">
-                <label>强度 <span class="intensity-val">40</span>%</label>
-                <input type="range" min="0" max="100" value="40" class="light-intensity">
-              </div>
-              <div class="slider-row">
-                <label>色温 <span class="temp-display">6500</span>K</label>
-                <input type="range" min="2000" max="10000" step="100" value="6500" class="light-temp">
-              </div>
-              <div class="cp-row" style="margin-bottom:8px">
-                <div class="cp-swatch light-color-swatch" style="background:rgb(184,212,240);width:32px;height:32px;border-radius:4px" onclick="var p=this.parentElement;var n=p.querySelector('.light-color-native');if(n)n.click()"></div>
-                <input type="color" class="light-color-native" value="#B8D4F0" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none" tabindex="-1">
-                <div class="cp-rgb">
-                  <div class="cp-field"><label>R</label><input type="number" min="0" max="255" value="184" class="light-color-r"></div>
-                  <div class="cp-field"><label>G</label><input type="number" min="0" max="255" value="212" class="light-color-g"></div>
-                  <div class="cp-field"><label>B</label><input type="number" min="0" max="255" value="240" class="light-color-b"></div>
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="field-col">
-                  <label>色温 K</label>
-                  <input type="number" class="field-input light-temp-val" value="6500" min="2000" max="10000" step="100">
-                </div>
-              </div>
-              <label style="display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:8px 0 2px">位置</label>
-              <div class="slider-row">
-                <label>X <span class="light-pos-x-val">-3.0</span></label>
-                <input type="range" min="-10" max="10" step="0.1" value="-3" class="light-pos-x">
-              </div>
-              <div class="slider-row">
-                <label>Y <span class="light-pos-y-val">3.0</span></label>
-                <input type="range" min="-10" max="10" step="0.1" value="3" class="light-pos-y">
-              </div>
-              <div class="slider-row">
-                <label>Z <span class="light-pos-z-val">-2.0</span></label>
-                <input type="range" min="-10" max="10" step="0.1" value="-2" class="light-pos-z">
-              </div>
-              <div class="drawer-actions">
-                <button class="btn btn-ghost btn-sm delete-light-btn">移除</button>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -890,7 +839,7 @@ lightList.addEventListener('click', function(e) {
 });
 
 // ---- Add light ----
-var lightIdCounter = 2;
+var lightIdCounter = 1;
 document.getElementById('add-light-btn').addEventListener('click', function() {
   var id = lightIdCounter++;
   var el = document.createElement('div');
@@ -984,13 +933,9 @@ controls.enableDamping = true;
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
-const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
-light1.position.set(2, 3, 2);
-scene.add(light1);
-
-const light2 = new THREE.DirectionalLight(0xffffff, 0.6);
-light2.position.set(0, 3, -2);
-scene.add(light2);
+const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+mainLight.position.set(2, 3, 2);
+scene.add(mainLight);
 
 // ── Grid ──
 scene.add(new THREE.GridHelper(10, 20, 0x666666, 0x444444));
