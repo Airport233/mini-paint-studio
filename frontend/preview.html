@@ -920,8 +920,9 @@ document.getElementById('add-light-btn').addEventListener('click', function() {
   lightList.appendChild(el);
   // Create Three.js point light
   var newLight = new THREE.PointLight(0xffffff, 2, 10);
-  var angle = (id * 1.2) % (Math.PI * 2);
-  var radius = 3.5 + (id % 3) * 0.8;
+  var count = lightList.querySelectorAll('.light-row').length;
+  var angle = (count * 1.8 + Math.random() * 0.5) % (Math.PI * 2);
+  var radius = 3.5 + (count % 4) * 1.2;
   var lx = +(Math.cos(angle) * radius).toFixed(1);
   var ly = +(2 + (id % 2) * 1.5).toFixed(1);
   var lz = +(Math.sin(angle) * radius).toFixed(1);
