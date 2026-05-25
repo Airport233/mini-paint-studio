@@ -193,6 +193,10 @@
     user-select: none;
   }
   .chip:hover, .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .stl-chip { position: relative; padding-right: 22px; }
+  .stl-del { position: absolute; top: 2px; right: 4px; font-size: 14px; line-height: 1; color: var(--meta); cursor: pointer; display: none; }
+  .stl-chip:hover .stl-del { display: inline; }
+  .stl-del:hover { color: var(--danger); }
 
   .slider-row { margin-bottom: 10px; }
   .slider-row:last-child { margin-bottom: 0; }
@@ -390,6 +394,7 @@
           <span class="chip active" data-geo="sphere">球体</span>
           <span class="chip" data-geo="cube">立方体</span>
           <span class="chip" data-geo="cylinder">圆柱体</span>
+          <span id="stl-chips"></span>
         </div>
         <label class="upload-zone" id="stl-upload-zone">
           <div class="canvas-icon"><i data-lucide="upload" width="28" height="28"></i></div>
@@ -397,8 +402,6 @@
           <div class="upload-hint">或点击选择 &middot; 仅 .stl 格式</div>
           <input type="file" accept=".stl" id="stl-input">
         </label>
-        <select id="stl-select" onchange="if(this.value)loadStlFromServer(this.value)" style="width:100%;margin-top:8px;padding:6px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:var(--radius-sm);color:var(--fg);font-size:12px;font-family:inherit"><option value="">— 已保存模型 —</option></select>
-        <div id="stl-list-container" style="margin-top:4px;font-size:11px;color:var(--muted)"></div>
         <p class="hook-note" id="stl-status">[Hook] 读取 STL &rarr; Three.js BufferGeometry</p>
       </div>
 
@@ -1464,17 +1467,15 @@ animate();
 
 // ── STL server sync ──
 function refreshStlList() {
-  var sel = document.getElementById('stl-select');
-  var ct = document.getElementById('stl-list-container');
-  if (!sel || !localStorage.getItem('token')) return;
+  var container = document.getElementById('stl-chips');
+  if (!container || !localStorage.getItem('token')) return;
   window.getStls().then(function(list) {
-    sel.innerHTML = '<option value="">— 已保存模型 —</option>' +
-      list.map(function(s) { return '<option value="' + s.id + '">' + s.displayName + '</option>'; }).join('');
-    if (ct) {
-      ct.innerHTML = list.map(function(s) {
-        return '<span style="cursor:pointer;color:var(--danger);margin-left:8px" onclick="deleteStlFromServer(\'' + s.id + '\')">删除</span>';
-      }).join('');
-    }
+    container.innerHTML = list.map(function(s) {
+      return '<span class="chip stl-chip" data-stl="' + s.id + '" onclick="loadStlFromServer(\'' + s.id + '\')" title="' + s.displayName + '">' +
+        s.displayName +
+        '<span class="stl-del" onclick="event.stopPropagation();deleteStlFromServer(\'' + s.id + '\')" title="删除">&times;</span>' +
+        '</span>';
+    }).join('');
   }).catch(function(){});
 }
 refreshStlList();
