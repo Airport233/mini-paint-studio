@@ -376,7 +376,7 @@
   // ---- Compute (direct fetch, no dependency on api.js) ----
   var lastMixResult = null;
 
-  function saveRecipe(index) {
+  function openSaveModal(index) {
     if (!lastMixResult) { alert('请先计算混色方案'); return; }
     var candidates = lastMixResult.candidates || [];
     if (index >= candidates.length) { alert('配方数据异常'); return; }
@@ -408,7 +408,7 @@
       targetR: d.targetR, targetG: d.targetG, targetB: d.targetB,
       mixSnapshots: d.mixSnapshots, cmyRef: d.cmyRef
     };
-    window.saveRecipe(req).then(function() { closeSaveModal(); alert('已保存'); }).catch(function(e) { alert('保存失败: ' + e.message); });
+    window.saveRecipe(req).then(function() { closeSaveModal(); alert('已保存'); }).catch(function(e) { alert('保存失败: ' + (e.message || '未知错误')); });
   }
 
   function compute() {
@@ -460,7 +460,7 @@
           + '<div class="info"><div class="title">' + partsText + '</div>'
           + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
           + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span>'
-          + '<button onclick="saveRecipe(' + i + ')" style="margin-left:8px;padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存</button>'
+          + '<button onclick="openSaveModal(' + i + ')" style="margin-left:8px;padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存</button>'
           + '</div>';
       }).join('');
       lastMixResult = data;
