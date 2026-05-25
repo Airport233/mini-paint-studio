@@ -390,9 +390,12 @@
   }
   var td = null;
   function showTagDropdown() {
+    console.log('showTagDropdown called, knownTags:', knownTags);
     if (!td) td = document.getElementById('tag-dropdown');
+    console.log('td element:', td);
     if (!td) return;
     var m = knownTags.filter(function(t) { return selectedTags.indexOf(t) < 0; });
+    console.log('filtered tags:', m);
     td.innerHTML = m.map(function(t) { return '<div style="padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg)" onmousedown="event.preventDefault()" onclick="addTag(\'' + t + '\');td.style.display=\'none\'">' + t + '</div>'; }).join('');
     td.style.display = m.length ? 'block' : 'none';
   }
@@ -519,7 +522,7 @@ lucide.createIcons();
 <div class="field"><label>名称</label><input type="text" id="save-name" placeholder="配方名称" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
 <div class="field"><label>标签</label>
 <div id="tag-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;min-height:24px"></div>
-<button id="tag-btn" onclick="event.stopPropagation();showTagDropdown()" style="width:100%;padding:8px 12px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit;text-align:left;cursor:pointer">选择标签 ▾</button>
+<button id="tag-btn" onclick="console.log('btn clicked');event.stopPropagation();showTagDropdown()" style="width:100%;padding:8px 12px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit;text-align:left;cursor:pointer">选择标签 ▾</button>
 <div id="tag-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-solid);border-radius:4px;max-height:120px;overflow-y:auto;z-index:100"></div>
 <input type="hidden" id="save-tags" value=""></div>
 <div class="field"><label>备注</label><input type="text" id="save-notes" placeholder="可选备注" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
