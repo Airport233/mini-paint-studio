@@ -374,6 +374,42 @@
   });
 
   // ---- Compute (direct fetch, no dependency on api.js) ----
+  var lastMixResult = null;
+
+  function saveRecipe(index) {
+    if (!lastMixResult) return;
+    var r = document.getElementById('r-input').value || 128;
+    var g = document.getElementById('g-input').value || 128;
+    var b = document.getElementById('b-input').value || 128;
+    var candidate = index >= 0 ? (lastMixResult.candidates || [])[index] : null;
+    var hex = candidate ? '#' + [candidate.mixedR, candidate.mixedG, candidate.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('') : ('#' + [r,g,b].map(function(v) { return parseInt(v).toString(16).padStart(2, '0'); }).join(''));
+    var partsText = candidate ? candidate.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ') : 'CMYK 理论参考';
+    document.getElementById('save-modal').style.display = 'flex';
+    document.getElementById('save-preview').style.background = hex;
+    document.getElementById('save-parts').value = partsText;
+    document.getElementById('save-name').value = candidate ? ('混色方案 #' + (index + 1)) : 'CMYK 理论参考';
+    document.getElementById('save-tags').value = '';
+    document.getElementById('save-notes').value = '';
+    document.getElementById('save-data').value = JSON.stringify({
+      targetR: parseInt(r), targetG: parseInt(g), targetB: parseInt(b),
+      mixSnapshots: candidate ? JSON.stringify([candidate]) : '[]',
+      cmyRef: lastMixResult.cmyRef ? JSON.stringify(lastMixResult.cmyRef) : '[]',
+      isCmy: index < 0
+    });
+  }
+  function closeSaveModal() { document.getElementById('save-modal').style.display = 'none'; }
+  function doSave() {
+    var d = JSON.parse(document.getElementById('save-data').value);
+    var req = {
+      name: document.getElementById('save-name').value || '未命名配方',
+      tags: document.getElementById('save-tags').value,
+      notes: document.getElementById('save-notes').value,
+      targetR: d.targetR, targetG: d.targetG, targetB: d.targetB,
+      mixSnapshots: d.mixSnapshots, cmyRef: d.cmyRef
+    };
+    window.saveRecipe(req).then(function() { closeSaveModal(); alert('已保存'); }).catch(function(e) { alert('保存失败: ' + e.message); });
+  }
+
   function compute() {
     var r = parseInt(document.getElementById('r-input').value) || 128;
     var g = parseInt(document.getElementById('g-input').value) || 128;
@@ -403,28 +439,31 @@
 	      var list = data.candidates || [];
 	      var cmy = data.cmyRef || [];
 	      var html = '';
-	      if (cmy.length) {
-	        var cmySwatches = cmy.map(function(p) {
-	          var cmyHex = p.code === 'CYAN' ? '#00B0E8' : p.code === 'MAGENTA' ? '#E5007F' : p.code === 'YELLOW' ? '#FFFF00' : p.code === 'WHITE' ? '#FFFFFF' : '#000000';
-	          return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0">'
-	            + '<div style="width:18px;height:18px;border-radius:4px;background:' + cmyHex + ';border:1px solid var(--border-solid);flex-shrink:0"></div>'
-	            + '<span style="font-size:14px;font-weight:500;color:var(--fg)">' + p.name + ' (' + p.parts + '份)</span></div>';
-	        }).join('');
-	        html += '<div style="padding:14px 16px;background:var(--surface-warm);border:1px solid var(--accent);border-radius:var(--radius-md);margin-bottom:16px">'
-	          + '<div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">CMYK 理论参考</div>'
-	          + cmySwatches
-	          + '<div style="font-size:12px;color:var(--muted);margin-top:8px">青色 · 品红 · 黄色 — 理论混合基线，用于对照库存候选</div></div>';
-	      }
-	      html += list.map(function(c) {
-	        var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
-	        var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
-	        return '<div class="candidate">'
-	          + '<div class="mini" style="background:' + hex + '"></div>'
-	          + '<div class="info"><div class="title">' + partsText + '</div>'
-	          + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
-	          + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span></div>';
-	      }).join('');
-	      document.getElementById('candidates').innerHTML = html;
+      if (cmy.length) {
+        var cmySwatches = cmy.map(function(p) {
+          var cmyHex = p.code === 'CYAN' ? '#00B0E8' : p.code === 'MAGENTA' ? '#E5007F' : p.code === 'YELLOW' ? '#FFFF00' : p.code === 'WHITE' ? '#FFFFFF' : '#000000';
+          return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0">'
+            + '<div style="width:18px;height:18px;border-radius:4px;background:' + cmyHex + ';border:1px solid var(--border-solid);flex-shrink:0"></div>'
+            + '<span style="font-size:14px;font-weight:500;color:var(--fg)">' + p.name + ' (' + p.parts + '份)</span></div>';
+        }).join('');
+        html += '<div style="padding:14px 16px;background:var(--surface-warm);border:1px solid var(--accent);border-radius:var(--radius-md);margin-bottom:16px">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+          + '<div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em">CMYK 理论参考</div>'
+          + '<button onclick="saveRecipe(-1)" style="padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存配方</button></div>'
+          + cmySwatches
+          + '<div style="font-size:12px;color:var(--muted);margin-top:8px">青色 · 品红 · 黄色 — 理论混合基线，用于对照库存候选</div></div>';
+      }
+      html += list.map(function(c, i) {
+        var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+        var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
+        return '<div class="candidate">'
+          + '<div class="mini" style="background:' + hex + '"></div>'
+          + '<div class="info"><div class="title">' + partsText + '</div>'
+          + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
+          + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span>'
+          + '<button onclick="saveRecipe(' + i + ')" style="margin-left:8px;padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存</button>'
+          + '</div>';
+      }).join('');
     }).catch(function(err) {
       document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败</div><div class="hint">' + err.message + '</div></div></div>';
       document.getElementById('status-msg').textContent = '请确保已登录并录入漆料';
@@ -447,6 +486,19 @@
   })();
 lucide.createIcons();
 </script>
+<div class="overlay" id="save-modal" style="display:none" onclick="closeSaveModal()">
+<div class="modal" onclick="event.stopPropagation()" style="width:420px">
+<h2>保存配方</h2>
+<div class="field"><label>预览</label><div id="save-preview" style="width:64px;height:64px;border-radius:8px;background:#808080;margin-bottom:8px"></div></div>
+<div class="field"><label>配比（只读）</label><input type="text" id="save-parts" readonly style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--muted);font-size:12px;font-family:inherit"></div>
+<div class="field"><label>名称</label><input type="text" id="save-name" placeholder="配方名称" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
+<div class="field"><label>标签（逗号分隔）</label><input type="text" id="save-tags" placeholder="如: 蓝色系,高光" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
+<div class="field"><label>备注</label><input type="text" id="save-notes" placeholder="可选备注" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
+<input type="hidden" id="save-data">
+<div class="modal-actions">
+<button class="btn btn-secondary" onclick="closeSaveModal()">取消</button>
+<button class="btn btn-primary" onclick="doSave()">保存</button>
+</div></div></div>
 <script src="js/layout.js"></script>
 </body>
 </html>
