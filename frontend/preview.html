@@ -1153,7 +1153,7 @@ renderer.domElement.addEventListener('wheel', function (e) {
   e.stopPropagation();
   var dir = new THREE.Vector3();
   camera.getWorldDirection(dir);
-  var delta = e.deltaY > 0 ? 0.3 : -0.3;
+  var delta = e.deltaY > 0 ? -0.3 : 0.3;
   selectedLight.position.addScaledVector(dir, delta);
   lightMarkers.forEach(function (m) {
     if (m.userData.light === selectedLight) m.position.copy(selectedLight.position);
