@@ -718,7 +718,7 @@ function syncMatFromRgb(r,g,b) {
   var hex = hexFromRgb(r,g,b);
   matSwatch.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
   matNative.value = hex;
-  // Hook: mesh.material.color.set(hex)
+  debouncedSave();
 }
 matNative.addEventListener('input', function() {
   var rgb = rgbFromHex(this.value);
@@ -1027,7 +1027,7 @@ function syncMaterialColor(r, g, b) {
       var g = parseInt(document.getElementById('mat-g').value) || 128;
       var b = parseInt(document.getElementById('mat-b').value) || 128;
       syncMaterialColor(r, g, b);
-      saveState();
+      debouncedSave();
     });
   }
 });
