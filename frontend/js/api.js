@@ -90,7 +90,7 @@ function requireAuth() {
   }
 }
 
-function logout() {
+window.logout = function() {
   localStorage.removeItem('token');
   localStorage.removeItem('email');
   window.location.href = '/auth';
