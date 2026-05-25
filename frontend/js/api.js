@@ -106,7 +106,10 @@ window.uploadStl = async function(file) {
     headers: token ? { 'Authorization': 'Bearer ' + token } : {},
     body: fd,
   });
-  if (!res.ok) throw new Error('上传失败');
+  if (!res.ok) {
+    var err = await res.json().catch(function() { return {}; });
+    throw new Error(err.message || '上传失败');
+  }
   return res.json();
 };
 
@@ -119,5 +122,11 @@ window.renameStl = async function(id, displayName) {
 };
 
 window.deleteStl = async function(id) {
-  return api('DELETE', '/stl/' + id);
+  var token = localStorage.getItem('token');
+  var res = await fetch('/api/stl/' + id, {
+    method: 'DELETE',
+    headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+  });
+  if (!res.ok) throw new Error('删除失败');
+  return res.json();
 };

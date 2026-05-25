@@ -15,6 +15,7 @@ public class StlFile {
     private String originalName;
     private String displayName;
     private String filePath;
+    private String fileHash;
     private double rotationX, rotationY, rotationZ;
     private double heightOffset;
     private long fileSize;
@@ -45,4 +46,6 @@ public class StlFile {
     public void setHeightOffset(double v) { heightOffset = v; }
     public long getFileSize() { return fileSize; }
     public Instant getCreatedAt() { return createdAt; }
+    public String getFileHash() { return fileHash; }
+    public void setFileHash(String h) { fileHash = h; }
 }

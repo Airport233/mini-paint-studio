@@ -8,6 +8,8 @@
 <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://unpkg.com/three@0.147.0/examples/js/loaders/STLLoader.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
 <style>
   :root {
     --bg:           #313338;
@@ -185,7 +187,7 @@
     flex-shrink: 0;
   }
 
-  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .chip {
     padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 500;
     cursor: pointer; border: 1px solid var(--border-solid);
@@ -193,10 +195,8 @@
     user-select: none;
   }
   .chip:hover, .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .stl-chip { position: relative; padding-right: 22px; }
-  .stl-del { position: absolute; top: 2px; right: 4px; font-size: 14px; line-height: 1; color: var(--meta); cursor: pointer; display: none; }
-  .stl-chip:hover .stl-del { display: inline; }
-  .stl-del:hover { color: var(--danger); }
+  .chip .stl-del { margin-left: 4px; font-size: 12px; color: var(--meta); cursor: pointer; vertical-align: middle; }
+  .chip .stl-del:hover { color: var(--danger); }
 
   .slider-row { margin-bottom: 10px; }
   .slider-row:last-child { margin-bottom: 0; }
@@ -355,7 +355,7 @@
     font-size: 11px; color: var(--meta);
     padding: 6px 10px; border: 1px dashed var(--border-solid);
     border-radius: var(--radius-sm);
-    text-align: center; line-height: 1.5;
+    text-align: center; line-height: 1.4;
     margin-top: 6px;
   }
 </style>
@@ -402,7 +402,7 @@
           <div class="upload-hint">或点击选择 &middot; 仅 .stl 格式</div>
           <input type="file" accept=".stl" id="stl-input">
         </label>
-        <p class="hook-note" id="stl-status">[Hook] 读取 STL &rarr; Three.js BufferGeometry</p>
+        <p class="hook-note" id="stl-status"></p>
       </div>
 
       <!-- Lights -->
@@ -542,9 +542,9 @@
 
 <script>
 // ---- Geometry switching ----
-document.querySelectorAll('.chip[data-geo]').forEach(function(c) {
+document.querySelectorAll('.chip').forEach(function(c) {
   c.addEventListener('click', function() {
-    document.querySelectorAll('.chip[data-geo]').forEach(function(x) { x.classList.remove('active'); });
+    document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
     c.classList.add('active');
     debouncedSave();
     // Hook: switch geometry in Three.js scene
@@ -676,7 +676,7 @@ function loadState() {
     var st = JSON.parse(raw);
 
     // Geometry
-    document.querySelectorAll('.chip[data-geo]').forEach(function(c) {
+    document.querySelectorAll('.chip').forEach(function(c) {
       c.classList.toggle('active', c.dataset.geo === st.geometry);
     });
 
@@ -790,10 +790,10 @@ function handleSTL(file) {
       }
       model.geometry = geom;
       stlStatus.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB) — 已加载';
-      document.querySelectorAll('.chip[data-geo]').forEach(function(c) { c.classList.remove('active'); });
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
       // Auto-upload to server
       if (localStorage.getItem('token') && window.uploadStl) {
-        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; refreshStlList(); }).catch(function() {});
+        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; refreshStlList(); }).catch(function(e) { stlStatus.textContent = e.message; });
       }
     } catch (ex) {
       stlStatus.textContent = '解析失败: ' + ex.message;
@@ -1033,12 +1033,13 @@ let model = new THREE.Mesh(geometries[currentGeo], material);
 scene.add(model);
 
 // ── Geometry selector ──
-document.querySelectorAll('.chip[data-geo]').forEach(function (chip) {
+document.querySelectorAll('.chip').forEach(function (chip) {
   chip.addEventListener('click', function () {
-    document.querySelectorAll('.chip[data-geo]').forEach(function (c) { c.classList.remove('active'); });
+    document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active'); });
     chip.classList.add('active');
     currentGeo = chip.dataset.geo;
     model.geometry = geometries[currentGeo];
+    document.querySelectorAll('.chip[data-stl]').forEach(function(c){c.classList.remove('active');});
   });
 });
 
@@ -1468,24 +1469,52 @@ animate();
 // ── STL server sync ──
 function refreshStlList() {
   var container = document.getElementById('stl-chips');
-  if (!container || !localStorage.getItem('token')) return;
+  if (!container) { console.warn('stl-chips not found'); return; }
+  if (!localStorage.getItem('token')) { setTimeout(refreshStlList, 500); return; }
   window.getStls().then(function(list) {
+    if (!list || !list.length) { container.innerHTML = ''; return; }
     container.innerHTML = list.map(function(s) {
-      return '<span class="chip stl-chip" data-stl="' + s.id + '" onclick="loadStlFromServer(\'' + s.id + '\')" title="' + s.displayName + '">' +
-        s.displayName +
+      var name = s.displayName.length > 20 ? s.displayName.slice(0, 18) + '...' : s.displayName;
+    return '<span class="chip" data-stl="' + s.id + '" onclick="loadStlFromServer(\'' + s.id + '\')" title="双击改名: ' + s.displayName + '">' +
+        name +
         '<span class="stl-del" onclick="event.stopPropagation();deleteStlFromServer(\'' + s.id + '\')" title="删除">&times;</span>' +
         '</span>';
     }).join('');
-  }).catch(function(){});
+  }).catch(function(e){ console.warn('STL list failed', e); });
 }
-refreshStlList();
+setTimeout(refreshStlList, 300);
+
+// Double-click STL chip to rename
+document.querySelector('.chip-row').addEventListener('dblclick', function(e) {
+  var chip = e.target.closest('.chip[data-stl]');
+  if (!chip) return;
+  e.stopPropagation();
+  var id = chip.dataset.stl;
+  var oldName = chip.childNodes[0].textContent.trim();
+  var input = document.createElement('input');
+  input.value = oldName;
+  input.style.cssText = 'width:100px;padding:2px 6px;font-size:11px;background:var(--surface-warm);border:1px solid var(--accent);border-radius:4px;color:var(--fg);font-family:inherit;outline:none';
+  chip.replaceChildren(input);
+  input.focus(); input.select();
+  var save = function() {
+    var newName = input.value.trim() || oldName;
+    var del = document.createElement('span');
+    del.className = 'stl-del'; del.textContent = '×'; del.title = '删除';
+    del.onclick = function(ev) { ev.stopPropagation(); deleteStlFromServer(id); };
+    chip.replaceChildren(document.createTextNode(newName), del);
+    window.renameStl(id, newName).catch(function(){});
+  };
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', function(ev) { if (ev.key === 'Enter') { ev.preventDefault(); save(); } });
+});
 
 function loadStlFromServer(id) {
   window.getStls().then(function(list) {
     var found = list.find(function(x) { return x.id === id; });
     if (!found) return;
     stlStatus.textContent = '加载: ' + found.displayName;
-    fetch(found.filePath).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
+    var token = localStorage.getItem('token');
+    fetch('/api/stl/' + id + '/download', { headers: token ? { 'Authorization': 'Bearer ' + token } : {} }).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
       var g = new THREE.STLLoader().parse(buf);
       g.computeBoundingBox();
       var bb = g.boundingBox, c2 = new THREE.Vector3(), sz = new THREE.Vector3();
@@ -1493,7 +1522,9 @@ function loadStlFromServer(id) {
       bb.getSize(sz); var m = Math.max(sz.x, sz.y, sz.z);
       if (m > 0) g.scale(2/m, 2/m, 2/m);
       model.geometry = g;
-      document.querySelectorAll('.chip[data-geo]').forEach(function(el){el.classList.remove('active');});
+      document.querySelectorAll('.chip').forEach(function(el){el.classList.remove('active');});
+      var chip = document.querySelector('.chip[data-stl="' + id + '"]');
+      if (chip) chip.classList.add('active');
       stlStatus.textContent = found.displayName + ' — 已加载';
     }).catch(function(){ stlStatus.textContent = '加载失败'; });
   });

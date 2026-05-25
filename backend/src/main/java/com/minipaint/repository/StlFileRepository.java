@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface StlFileRepository extends JpaRepository<StlFile, UUID> {
     List<StlFile> findByUserId(UUID userId);
+    boolean existsByUserIdAndFileHash(UUID userId, String fileHash);
 }

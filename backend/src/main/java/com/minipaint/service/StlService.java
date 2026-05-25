@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public interface StlService {
     StlResponse upload(UUID userId, MultipartFile file);
+    StlResponse get(UUID userId, UUID fileId);
     List<StlResponse> list(UUID userId);
     StlResponse update(UUID userId, UUID fileId, String displayName, Double rx, Double ry, Double rz, Double h);
     void delete(UUID userId, UUID fileId);

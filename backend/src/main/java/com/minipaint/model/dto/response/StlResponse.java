@@ -6,6 +6,7 @@ import java.util.UUID;
 public class StlResponse {
     private UUID id;
     private String displayName, originalName;
+    private String filePath;
     private long fileSize;
     private double rotationX, rotationY, rotationZ;
     private double heightOffset;
@@ -13,7 +14,7 @@ public class StlResponse {
     public static StlResponse from(StlFile f) {
         var r = new StlResponse();
         r.id = f.getId(); r.displayName = f.getDisplayName(); r.originalName = f.getOriginalName();
-        r.fileSize = f.getFileSize();
+        r.filePath = f.getFilePath(); r.fileSize = f.getFileSize();
         r.rotationX = f.getRotationX(); r.rotationY = f.getRotationY(); r.rotationZ = f.getRotationZ();
         r.heightOffset = f.getHeightOffset();
         return r;
@@ -22,6 +23,7 @@ public class StlResponse {
     public UUID getId() { return id; }
     public String getDisplayName() { return displayName; }
     public String getOriginalName() { return originalName; }
+    public String getFilePath() { return filePath; }
     public long getFileSize() { return fileSize; }
     public double getRotationX() { return rotationX; }
     public double getRotationY() { return rotationY; }

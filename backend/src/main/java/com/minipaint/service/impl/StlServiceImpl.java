@@ -22,12 +22,39 @@ public class StlServiceImpl implements StlService {
     @Override
     public StlResponse upload(UUID userId, MultipartFile file) {
         try {
-            String path = storage.store(file.getInputStream(), file.getOriginalFilename(), "stl");
+            byte[] bytes = file.getBytes();
+            String hash = sha256(bytes);
+            if (repo.existsByUserIdAndFileHash(userId, hash)) {
+                throw new RuntimeException("该 STL 文件已存在（相同内容）");
+            }
+            String path = storage.store(new java.io.ByteArrayInputStream(bytes), file.getOriginalFilename(), "stl");
             var entity = new StlFile(userId, file.getOriginalFilename(), file.getOriginalFilename(), path, file.getSize());
+            entity.setFileHash(hash);
             return StlResponse.from(repo.save(entity));
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("STL 上传失败", e);
         }
+    }
+
+    private String sha256(byte[] data) {
+        try {
+            var md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(data);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("SHA-256 error", e);
+        }
+    }
+
+    @Override
+    public StlResponse get(UUID userId, UUID fileId) {
+        var f = repo.findById(fileId).orElseThrow(() -> new RuntimeException("文件不存在"));
+        if (!f.getUserId().equals(userId)) throw new RuntimeException("无权访问");
+        return StlResponse.from(f);
     }
 
     @Override

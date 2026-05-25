@@ -18,8 +18,12 @@ public class StlController {
     public StlController(StlService stlService) { this.stlService = stlService; }
 
     @PostMapping("/upload")
-    public ResponseEntity<StlResponse> upload(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(stlService.upload(user.getId(), file));
+    public ResponseEntity<?> upload(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(stlService.upload(user.getId(), file));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(409).body(Map.of("message", e.getMessage()));
+        }
     }
 
     @GetMapping
@@ -31,6 +35,15 @@ public class StlController {
     public ResponseEntity<StlResponse> update(@AuthenticationPrincipal User user, @PathVariable String id, @RequestBody StlRenameRequest req) {
         return ResponseEntity.ok(stlService.update(user.getId(), UUID.fromString(id),
             req.getDisplayName(), req.getRotationX(), req.getRotationY(), req.getRotationZ(), req.getHeightOffset()));
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<byte[]> download(@AuthenticationPrincipal User user, @PathVariable String id) {
+        var stl = stlService.get(user.getId(), UUID.fromString(id));
+        try {
+            byte[] bytes = java.nio.file.Files.readAllBytes(java.nio.file.Path.of(stl.getFilePath()));
+            return ResponseEntity.ok().header("Content-Type", "application/octet-stream").body(bytes);
+        } catch (Exception e) { return ResponseEntity.notFound().build(); }
     }
 
     @DeleteMapping("/{id}")
