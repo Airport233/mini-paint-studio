@@ -464,6 +464,10 @@
           + '<button onclick="saveRecipe(' + i + ')" style="margin-left:8px;padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存</button>'
           + '</div>';
       }).join('');
+      lastMixResult = data;
+      document.getElementById('candidates').innerHTML = html;
+      document.getElementById('status-msg').textContent =
+        (data.message || '') + ' · 已匹配 ' + list.length + ' 个方案';
     }).catch(function(err) {
       document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败</div><div class="hint">' + err.message + '</div></div></div>';
       document.getElementById('status-msg').textContent = '请确保已登录并录入漆料';
