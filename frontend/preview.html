@@ -1265,6 +1265,11 @@ var rotMap = { x: 'x', y: 'z', z: 'y' };
 
 // ── Sync scene from restored UI state ──
 function syncSceneFromUI() {
+  // Restore geometry
+  var activeChip = document.querySelector('.chip[data-geo].active');
+  if (activeChip && geometries[activeChip.dataset.geo]) {
+    model.geometry = geometries[activeChip.dataset.geo];
+  }
   var roughSlider = document.getElementById('rough-slider');
   var metalSlider = document.getElementById('metal-slider');
   if (roughSlider) material.roughness = parseFloat(roughSlider.value);
