@@ -380,9 +380,17 @@
     var b = parseInt(document.getElementById('b-input').value) || 128;
 
     document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算中...</div></div></div>';
+    document.getElementById('status-msg').textContent = '正在匹配库存漆料...';
+
+    if (typeof postMix !== 'function') {
+      document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">postMix 未加载，请刷新页面</div></div></div>';
+      return;
+    }
+
     postMix(r, g, b).then(function(data) {
       var list = data.candidates || [];
-      document.getElementById('candidates').innerHTML = list.map(function(c, i) {
+      var cmy = data.cmyRef || [];
+      var html = list.map(function(c) {
         var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
         var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
         return '<div class="candidate">'
@@ -391,10 +399,15 @@
           + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
           + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span></div>';
       }).join('');
+      // Add CMY reference
+      var cmyText = cmy.map(function(p) { return p.name + ' ' + p.parts + '份'; }).join(', ');
+      html += '<div style="margin-top:16px;padding:12px;background:var(--surface-warm);border-radius:var(--radius-sm);font-size:12px;color:var(--muted)">'
+        + '<strong>CMY 参考:</strong> ' + cmyText + '</div>';
+      document.getElementById('candidates').innerHTML = html;
       document.getElementById('status-msg').textContent =
         (data.message || '') + ' · 已匹配 ' + list.length + ' 个方案';
-    }).catch(function() {
-      document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败，请确保已录入漆料并登录</div></div></div>';
+    }).catch(function(err) {
+      document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败</div><div class="hint">' + (err && err.message || '请确保已登录并录入漆料') + '</div></div></div>';
     });
   }
   // Read color from URL params (e.g. mix.html?r=212&g=165&b=116)

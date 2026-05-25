@@ -10,7 +10,7 @@ async function api(method, path, body) {
   if (token) opts.headers['Authorization'] = 'Bearer ' + token;
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(API_BASE + path, opts);
-  if (res.status === 401 && !path.startsWith('/auth/')) {
+  if ((res.status === 401 || res.status === 403) && !path.startsWith('/auth/')) {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
     window.location.href = '/auth';
