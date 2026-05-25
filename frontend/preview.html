@@ -5,14 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>3D 预览 — HobbyMix</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
-  }
-}
-</script>
+<script src="https://unpkg.com/three@0.165.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.165.0/examples/js/controls/OrbitControls.js"></script>
 <style>
   :root {
     --bg:           #313338;
@@ -963,9 +957,9 @@ saveState(); // ensure a fresh save on first visit
 lucide.createIcons();
 </script>
 <script src="js/layout.js"></script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+<script>
+
+
 
 // ── Scene setup ──
 const container = document.getElementById('canvas-container');
@@ -980,7 +974,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 container.appendChild(renderer.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
 // ── Lights ──
