@@ -1160,6 +1160,16 @@ document.getElementById('light-list').addEventListener('input', function(e) {
   }
   if (e.target.classList.contains('light-intensity')) {
     light.intensity = parseFloat(e.target.value) / 100;
+    var iv = row.querySelector('.intensity-val');
+    if (iv) iv.textContent = e.target.value;
+    var meta = row.querySelector('.light-meta');
+    if (meta) meta.textContent = meta.textContent.replace(/强度 \d+%/, '强度 ' + e.target.value + '%');
+  }
+  if (e.target.classList.contains('light-temp') || e.target.classList.contains('light-temp-val')) {
+    var tv = row.querySelector('.temp-display');
+    if (tv) tv.textContent = e.target.value + 'K';
+    var meta2 = row.querySelector('.light-meta');
+    if (meta2) meta2.textContent = meta2.textContent.replace(/\d+K/, e.target.value + 'K');
   }
   if (e.target.classList.contains('light-pos-x') || e.target.classList.contains('light-pos-y') || e.target.classList.contains('light-pos-z')) {
     light.position.set(
