@@ -1322,43 +1322,46 @@ var rotMap = { x: 'x', y: 'y', z: 'z' };
 // ── Sync scene from restored UI state ──
 // ── STL list management ──
 function loadStlList() {
-  var select = document.getElementById("stl-select");
-  if (!select || !localStorage.getItem("token")) return;
+  var sel = document.getElementById('stl-select');
+  if (!sel || !localStorage.getItem('token')) return;
   window.getStls().then(function(list) {
-    select.innerHTML = "<option value=\"\">— 已保存的模型 —</option>" +
-      list.map(function(s) { return "<option value=\"" + s.id + "\">" + s.displayName + "</option>"; }).join("");
-    var container = document.getElementById("stl-list-container");
-    if (container) {
-      container.innerHTML = list.map(function(s) {
-        return "<div style=\"display:flex;gap:8px;align-items:center;margin-top:4px;font-size:12px;color:var(--muted)\">" +
-          "<span style=\"flex:1\">" + s.displayName + "</span>" +
-          "<button onclick=\"deleteStlFile(\"" + s.id + "\")\" style=\"background:none;border:none;color:var(--danger);cursor:pointer;font-size:11px\">删除</button>" +
-          "</div>";
-      }).join("");
+    sel.innerHTML = '<option value="">-- 已保存 --</option>' +
+      list.map(function(s) {
+        return '<option value="' + s.id + '">' + s.displayName + '</option>';
+      }).join('');
+    var ct = document.getElementById('stl-list-container');
+    if (ct) {
+      ct.innerHTML = list.map(function(s) {
+        return '<div style="display:flex;gap:8px;align-items:center;margin-top:4px;font-size:12px;color:var(--muted)">' +
+          '<span style="flex:1">' + s.displayName + '</span>' +
+          '<button onclick="deleteStlFile(\'' + s.id + '\')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:11px">删除</button>' +
+          '</div>';
+      }).join('');
     }
   }).catch(function(){});
 }
 function loadStlModel(id) {
   window.getStls().then(function(list) {
-    var found = list.find(function(s) { return s.id === id; });
-    if (!found) return;
-    stlStatus.textContent = "加载中: " + found.displayName;
-    fetch(found.filePath).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
-      var geom = new THREE.STLLoader().parse(buf);
-      var bb = geom.boundingBox;
-      var c = new THREE.Vector3(); bb.getCenter(c); geom.translate(-c.x, -c.y, -c.z);
-      var s = new THREE.Vector3(); bb.getSize(s);
-      var max = Math.max(s.x, s.y, s.z);
-      if (max > 0) geom.scale(2.0 / max, 2.0 / max, 2.0 / max);
-      model.geometry = geom;
-      document.querySelectorAll(".chip[data-geo]").forEach(function(c){c.classList.remove("active");});
-      stlStatus.textContent = found.displayName + " — 已加载";
-    }).catch(function() { stlStatus.textContent = "加载失败"; });
+    var f = list.find(function(s) { return s.id === id; });
+    if (!f) return;
+    stlStatus.textContent = '加载: ' + f.displayName;
+    fetch(f.filePath).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
+      var g = new THREE.STLLoader().parse(buf);
+      g.computeBoundingBox();
+      var bb = g.boundingBox, c = new THREE.Vector3(), sz = new THREE.Vector3();
+      bb.getCenter(c); g.translate(-c.x, -c.y, -c.z);
+      bb.getSize(sz);
+      var m = Math.max(sz.x, sz.y, sz.z);
+      if (m > 0) g.scale(2/m, 2/m, 2/m);
+      model.geometry = g;
+      document.querySelectorAll('.chip[data-geo]').forEach(function(el){el.classList.remove('active');});
+      stlStatus.textContent = f.displayName + ' -- loaded';
+    }).catch(function(){ stlStatus.textContent = 'load failed'; });
   });
 }
 function deleteStlFile(id) {
-  if (!confirm("确定删除此模型？")) return;
-  window.deleteStl(id).then(function() { loadStlList(); }).catch(function() { alert("删除失败"); });
+  if (!confirm('Delete this model?')) return;
+  window.deleteStl(id).then(function(){ loadStlList(); }).catch(function(){ alert('failed'); });
 }
 loadStlList();
 function syncSceneFromUI() {
