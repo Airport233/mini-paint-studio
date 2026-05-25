@@ -995,6 +995,7 @@ if (roughSlider && roughVal) {
   roughSlider.addEventListener('input', function () {
     material.roughness = parseFloat(roughSlider.value);
     roughVal.textContent = parseFloat(roughSlider.value).toFixed(2);
+    debouncedSave();
   });
 }
 
@@ -1004,6 +1005,7 @@ if (metalSlider && metalVal) {
   metalSlider.addEventListener('input', function () {
     material.metalness = parseFloat(metalSlider.value);
     metalVal.textContent = parseFloat(metalSlider.value).toFixed(2);
+    debouncedSave();
   });
 }
 
@@ -1025,6 +1027,7 @@ function syncMaterialColor(r, g, b) {
       var g = parseInt(document.getElementById('mat-g').value) || 128;
       var b = parseInt(document.getElementById('mat-b').value) || 128;
       syncMaterialColor(r, g, b);
+      debouncedSave();
     });
   }
 });
@@ -1246,6 +1249,7 @@ var rotMap = { x: 'x', y: 'z', z: 'y' };
     slider.addEventListener('input', function () {
       modelParent.position[posMap[axis]] = parseFloat(slider.value);
       label.textContent = parseFloat(slider.value).toFixed(1);
+      debouncedSave();
     });
   }
 });
@@ -1260,6 +1264,7 @@ var rotMap = { x: 'x', y: 'z', z: 'y' };
       var rz = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-z').value) || 0);
       modelParent.rotation.set(rx, rotMap.y === 'z' ? rz : ry, rotMap.z === 'y' ? ry : rz);
       label.textContent = slider.value + '°';
+      debouncedSave();
     });
   }
 });
