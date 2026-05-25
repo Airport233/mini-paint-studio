@@ -706,6 +706,7 @@ function loadState() {
         list.appendChild(el);
       });
       lightIdCounter = st.lights.length;
+      setTimeout(function () { syncSceneFromUI(); }, 50);
       // Force main light name
       var firstName = list.querySelector('.light-row[data-light-id="0"] .light-name');
       if (firstName) firstName.textContent = '主光源';
