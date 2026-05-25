@@ -450,9 +450,6 @@
                 <label>Z <span class="light-pos-z-val">3.0</span></label>
                 <input type="range" min="-10" max="10" step="0.1" value="3" class="light-pos-z">
               </div>
-              <div class="drawer-actions">
-                <button class="btn btn-ghost btn-sm delete-light-btn">移除</button>
-              </div>
             </div>
           </div>
 
@@ -645,7 +642,7 @@ function makeLightHTML(l) {
     '<div class="slider-row"><label>X <span class="light-pos-x-val">' + l.pos.x.toFixed(1) + '</span></label><input type="range" min="-10" max="10" step="0.1" value="' + l.pos.x + '" class="light-pos-x"></div>' +
     '<div class="slider-row"><label>Y <span class="light-pos-y-val">' + l.pos.y.toFixed(1) + '</span></label><input type="range" min="-10" max="10" step="0.1" value="' + l.pos.y + '" class="light-pos-y"></div>' +
     '<div class="slider-row"><label>Z <span class="light-pos-z-val">' + l.pos.z.toFixed(1) + '</span></label><input type="range" min="-10" max="10" step="0.1" value="' + l.pos.z + '" class="light-pos-z"></div>' +
-    '<div class="drawer-actions"><button class="btn btn-ghost btn-sm delete-light-btn">移除</button></div></div>';
+    (l.id !== 0 ? '<div class="drawer-actions"><button class="btn btn-ghost btn-sm delete-light-btn">移除</button></div>' : '') + '</div>';
 }
 function loadState() {
   try {
@@ -687,6 +684,7 @@ function loadState() {
         var el = document.createElement('div');
         el.className = 'light-row' + (l.expanded ? ' expanded' : '');
         el.setAttribute('data-light-id', i);
+        l.id = i;
         el.innerHTML = makeLightHTML(l);
         list.appendChild(el);
       });
@@ -830,10 +828,11 @@ lightList.addEventListener('input', function(e) {
 lightList.addEventListener('click', function(e) {
   var delBtn = e.target.closest('.delete-light-btn');
   if (!delBtn) return;
+  var row = delBtn.closest('.light-row');
+  if (row.getAttribute('data-light-id') === '0') return; // main light
   e.stopPropagation();
-  var rows = lightList.querySelectorAll('.light-row');
-  if (rows.length <= 1) return;
-  delBtn.closest('.light-row').remove();
+  if (lightList.querySelectorAll('.light-row').length <= 1) return;
+  row.remove();
   debouncedSave();
 });
 
@@ -1226,12 +1225,12 @@ function syncSceneFromUI() {
   var px = parseFloat(document.querySelector('.geo-pos-x')?.value) || 0;
   var py = parseFloat(document.querySelector('.geo-pos-y')?.value) || 0;
   var pz = parseFloat(document.querySelector('.geo-pos-z')?.value) || 0;
-  modelParent.position.set(px, py, pz);
+  modelParent.position.set(px, pz, py); // Y/Z swapped to match proto labels
 
   var rx = THREE.MathUtils.degToRad(parseInt(document.querySelector('.geo-rot-x')?.value) || 0);
   var ry = THREE.MathUtils.degToRad(parseInt(document.querySelector('.geo-rot-y')?.value) || 0);
   var rz = THREE.MathUtils.degToRad(parseInt(document.querySelector('.geo-rot-z')?.value) || 0);
-  modelParent.rotation.set(rx, ry, rz);
+  modelParent.rotation.set(rx, rz, ry); // Y/Z swapped to match proto labels
 
   // Sync lights from UI rows
   var existingLights = getLights();
