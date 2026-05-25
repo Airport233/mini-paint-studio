@@ -95,3 +95,29 @@ window.logout = function() {
   localStorage.removeItem('email');
   window.location.href = '/auth';
 }
+
+// STL
+window.uploadStl = async function(file) {
+  var fd = new FormData();
+  fd.append('file', file);
+  var token = localStorage.getItem('token');
+  var res = await fetch('/api/stl/upload', {
+    method: 'POST',
+    headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+    body: fd,
+  });
+  if (!res.ok) throw new Error('上传失败');
+  return res.json();
+};
+
+window.getStls = async function() {
+  return api('GET', '/stl');
+};
+
+window.renameStl = async function(id, displayName) {
+  return api('PUT', '/stl/' + id, { displayName: displayName });
+};
+
+window.deleteStl = async function(id) {
+  return api('DELETE', '/stl/' + id);
+};
