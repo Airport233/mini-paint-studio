@@ -380,7 +380,7 @@
 
   var knownTags = [];
   var selectedTags = [];
-  (function loadTags() { window.getRecipes().then(function(list) { var all = []; list.forEach(function(r) { if (r.tags) all = all.concat(r.tags.split(',').filter(Boolean)); }); knownTags = all.filter(function(t,i) { return all.indexOf(t)===i; }); }).catch(function(){}); })();
+  (function loadTags() { knownTags = ['蓝色系','红色系','绿色系','金属','高光','阴影','肤色','NMM']; window.getRecipes().then(function(list) { var all = knownTags.slice(); list.forEach(function(r) { if (r.tags) all = all.concat(r.tags.split(',').filter(Boolean)); }); knownTags = all.filter(function(t,i) { return all.indexOf(t)===i; }); }).catch(function(){}); })();
   function addTag(t) { if (selectedTags.indexOf(t) < 0) { selectedTags.push(t); renderTagChips(); } }
   function removeTag(t) { var i = selectedTags.indexOf(t); if (i >= 0) selectedTags.splice(i, 1); renderTagChips(); }
   function renderTagChips() {
@@ -389,6 +389,7 @@
     document.getElementById('save-tags').value = selectedTags.join(',');
   }
   var ti = document.getElementById('tag-input'), td = document.getElementById('tag-dropdown');
+  var td = document.getElementById('tag-dropdown');
   function showTagDropdown() {
     var m = knownTags.filter(function(t) { return selectedTags.indexOf(t) < 0; });
     td.innerHTML = m.map(function(t) { return '<div style="padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg)" onmousedown="event.preventDefault()" onclick="addTag(\'' + t + '\');td.style.display=\'none\'">' + t + '</div>'; }).join('');
