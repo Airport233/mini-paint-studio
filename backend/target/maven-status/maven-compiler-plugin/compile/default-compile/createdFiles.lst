@@ -1,9 +1,11 @@
 com\minipaint\model\dto\response\PaintPart.class
 com\minipaint\model\entity\Paint.class
+com\minipaint\controller\MixController.class
 com\minipaint\MiniPaintApplication.class
 com\minipaint\config\CorsConfig.class
 com\minipaint\repository\PaintRepository.class
 com\minipaint\security\JwtAuthenticationFilter.class
+com\minipaint\model\dto\request\MixRequest.class
 com\minipaint\model\dto\response\AuthResponse.class
 com\minipaint\service\impl\PaintServiceImpl.class
 com\minipaint\service\UserService.class
