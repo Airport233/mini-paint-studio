@@ -788,8 +788,11 @@ function handleSTL(file) {
       }
       model.geometry = geom;
       stlStatus.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB) — 已加载';
-      // Deselect built-in geometry chips
       document.querySelectorAll('.chip[data-geo]').forEach(function(c) { c.classList.remove('active'); });
+      // Auto-upload to server
+      if (localStorage.getItem('token') && window.uploadStl) {
+        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; }).catch(function() {});
+      }
     } catch (ex) {
       stlStatus.textContent = '解析失败: ' + ex.message;
     }
