@@ -116,6 +116,45 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 ---
 
+## 2026-05-25 — Phase 4: 3D 预览核心
+
+| Task | Commit | 说明 |
+|------|--------|------|
+| 4.1 | `79c3af5` (worktree) | Three.js CDN 场景搭建 — Canvas, OrbitControls, GridHelper, 几何体选择器 |
+| 4.2 | `d4cd97b` (worktree) | 材质面板 — roughness/metalness/color 滑块 + 色块预览绑定 Three.js |
+| 4.3 | `b5d822d` (worktree) | 多光源系统 — Raycaster 拖拽, 相机面投影, 滚轮分离, 模型变换, 点光源 |
+
+- **Worktree**: `feature/threed-preview`（`c:/Users/cc24a/Desktop/threed-preview`）
+- **PR**: [#2](https://github.com/Airport233/mini-paint-studio/pull/2)
+- **技术方案**: Three.js v0.147 CDN + OrbitControls.js + CSS3D
+- **实现功能**:
+  - 球体/立方体/圆柱体切换 + 独立 XYZ 旋转/位移
+  - `MeshStandardMaterial` 颜色/粗糙度/金属度实时绑定
+  - 1 个主光源（方向光，不可删除）+ 最多 5 个点光源（有距离衰减）
+  - 光源小球可视化 + Raycaster 点击选中 + 拖拽移动 + 滚轮推拉
+  - `preserveDrawingBuffer: true` 支持 Canvas 取色
+  - localStorage 保存/恢复完整预览状态（几何体/材质/光源/位置）
+  - 色温 K → RGB 转换，原生颜色拾取器实时绑定
+  - 6 光源上限，主光源不可删除
+
+### Phase 4 人工验证与修复
+
+| 问题 | 修复 Commit | 说明 |
+|------|-----------|------|
+| 取色器截图只显示左上角 | `5a010c5` | Canvas CSS 设为 100%/100% 自适应 |
+| 新增光源不出现 | `7207bff` | 立即创建 PointLight + rebuildMarkers |
+| 光源位置不保存 | `4a340ab` | DOM slider 同步后再 saveState |
+| 重复新增位置相同 | `7bdba58` | 基于当前数量+随机偏移 |
+| 旋转卡顿/浏览器手势 | `e79d832` | rotation.order YXZ + touch-action |
+| YZ 轴映射反复修 | `1054de7` `2ea0710` 等 | 最终撤除所有交换，直连映射 |
+| 材质颜色/状态不持久化 | `bf69ad3` `6556ba7` `934a9d6` `dc59144` | 多处补 saveState + syncSceneFromUI |
+| 光源名称混乱 | `99208a6` `def88b2` `587778e` | 主光源/光源N + 强制定名 |
+| 登出按钮无效 | `516180c` `b358cc2` `fc2a917` | inline 调用 + span 替换 a |
+| 光源数量无上限 | `3044872` | 限 6 个 |
+| 品红/青色不标准 | `bfeb7b1` `95d6a2d` | #E5007F / #00B0E8 |
+
+---
+
 ## 2026-05-25 — Phase 3: 混色引擎
 
 | Task | Commit | 说明 |
