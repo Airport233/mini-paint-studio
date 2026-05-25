@@ -116,14 +116,34 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 ---
 
+## 2026-05-25 — Phase 3: 混色引擎
+
+| Task | Commit | 说明 |
+|------|--------|------|
+| 3.1 | `bcbf3d2` (worktree) | MixService 接口 + MixServiceRgbImpl（RGB 穷举，≤3漆，≤6份）|
+| 3.2 | `406310a` (worktree) | MixController + MixRequest DTO |
+
+- **Worktree**: `feature/mix-engine`（`c:/Users/cc24a/Desktop/mix-engine-backend`）
+- **PR**: [#1](https://github.com/Airport233/mini-paint-studio/pull/1)
+- **TDD**: MixService 6 tests → compile error → implementation → 6 PASS
+- **测试**: 后端 24 tests PASS
+- **算法核心**:
+  - 候选漆池 = 用户库漆 + 内置纯黑(0,0,0) + 纯白(255,255,255)
+  - 1-paint / 2-paint / 3-paint 整数份数枚举（总份数 ≤ 6）
+  - 偏差 = 欧几里得距离 √(ΔR²+ΔG²+ΔB²)，按升序 TOP 10
+  - 份数 ≤ 总份数 1/10 标记"少量"
+  - CMY 参考始终生成
+  - ΔE > 15 时标注"偏差较大"
+
+---
+
 ## 学到的教训
 
 1. **Agent 有时很轴，不知道变通**：把 Open Design 的 HTML 原型转成 React 组件时，格式一再错位、图标丢失、布局塌陷。我们反复修了七八轮，Agent 始终没提出"既然原型已经是完整 HTML，为什么不直接用原生 JS 调用后端 API"。直到我主动质疑"就没有能直接加载 HTML 的技术栈吗"，它才立刻切换方案——十几分钟搞定，格式 100% 匹配。教训：Agent 会沿着一个方向死磕，你作为人类需要识别"这条路本身可能不对"，而不是跟着它在细节里打转。
 
-2. **不能过分相信 Agent，即使它是专门做这件事的**：我把 SPEC.md 和 PLAN.md 投喂给 Open Design 让它做前端。它的设计系统（Discord 令牌）和 HTML 原型本来设计得很好，可视化编辑也是它的优势。但在我让它"生成完整前端"后，它:
+2. **不能过分相信 Agent，即使它是专门做这件事的**：我把 SPEC.md 和 PLAN.md 投喂给 Open Design 让它做前端。它的设计系统（Discord 令牌）和 HTML 原型本来设计得很好，可视化编辑也是它的优势。但在我让它"生成前端"后，默认他是生成前端原型，但它:
    - 完全放弃了可视化预览，输出了一个无法直接预览的 React 工程
    - 自作主张安装了全套 React + TypeScript + Three.js 依赖（node_modules 超过 200MB）
    - 消耗了大量 Token，产出的代码有多处 TS 错误和与 SPEC 不一致的地方
    - 我本可以用 Open Design 的 Web 界面逐页设计、预览、调整，再导出 HTML 给我集成——这才是它的正确用法。教训：专业工具也要在它的能力边界内使用。让设计工具做设计，让编码 Agent 写逻辑，不要越界。
 
-3. **SPEC 写完不是终点——冷启动验证是真正的试金石**：我们花了几小时写完 SPEC+PLAN，觉得已经事无巨细。结果一个陌生 Agent 刚读第一行就卡住了——"REQUIRED SUB-SKILL 这个工具我没有"。我们自以为清晰的指令，对另一个 Agent 完全是黑话。冷启动暴露的不只是措辞问题，更是一种幻觉：你以为 spec 写清楚了，其实大量上下文只存在于你脑子和主 Agent 的对话记录里。

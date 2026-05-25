@@ -451,7 +451,7 @@ Commit: `feat: add reusable ColorPicker component and AddPaintDialog`（使用�
 
 ## Phase 3: Mix Engine
 
-### Task 3.1: MixService (Algorithm + Tests)
+### [x] Task 3.1: MixService — `bcbf3d2`
 
 - [ ] **Step 1: Write MixServiceTest** — critical test cases:
 
@@ -624,7 +624,7 @@ public class MixServiceRgbImpl implements MixService {
 
 Commit: `feat: add MixService with RGB exhaustive enumeration, built-in black/white fallback, trace marking`（使用上述格式，标注 Subagent）
 
-### Task 3.2: MixController + DTOs
+### [x] Task 3.2: MixController + DTOs — `406310a`
 
 - [ ] **Step 1: Create MixRequest (r,g,b), MixResponse (candidates, cmyRef, message), MixCandidate (paints list, mixedR/G/B, deviation), PaintPart (paintId, brand, code, name, parts, trace)**
 
