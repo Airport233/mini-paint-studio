@@ -1232,8 +1232,8 @@ function syncSceneFromUI() {
   var rz = THREE.MathUtils.degToRad(parseInt(document.querySelector('.geo-rot-z')?.value) || 0);
   modelParent.rotation.set(rx, rz, ry); // Y/Z swapped to match proto labels
 
-  // Sync lights from UI rows
-  var existingLights = getLights();
+  // Sync lights from UI rows — first remove all directional/point lights
+  getLights().forEach(function(l) { scene.remove(l); });
   document.querySelectorAll('.light-row').forEach(function(row) {
     var id = parseInt(row.getAttribute('data-light-id'));
     var r2 = parseInt(row.querySelector('.light-color-r')?.value) || 255;
@@ -1244,13 +1244,8 @@ function syncSceneFromUI() {
     var py2 = parseFloat(row.querySelector('.light-pos-y')?.value) || 0;
     var pz2 = parseFloat(row.querySelector('.light-pos-z')?.value) || 0;
 
-    var light;
-    if (existingLights[id]) {
-      light = existingLights[id];
-    } else {
-      light = new THREE.DirectionalLight(0xffffff, 1);
-      scene.add(light);
-    }
+    var light = new THREE.DirectionalLight(0xffffff, 1);
+    scene.add(light);
     light.color.setRGB(r2 / 255, g2 / 255, b2 / 255);
     light.intensity = intensity;
     light.position.set(px2, py2, pz2);
