@@ -567,7 +567,7 @@
           <label>旋转 Z <span class="geo-rot-z-val">0</span>&deg;</label>
           <input type="range" min="-180" max="180" step="1" value="0" class="geo-rot-z">
         </div>
-        <p class="hook-note">[Hook] mesh.position.set(x,y,z) &middot; mesh.rotation.set(x,y,z)</p>
+        <button class="btn btn-secondary" id="btn-reset-transform" style="margin-top:8px;width:100%">↺ 重置变换</button>
       </div>
 
 
@@ -1175,6 +1175,21 @@ scene.remove(model);
 scene.add(modelParent);
 modelParent.add(model);
 model.position.set(0, 0, 0);
+
+// Reset transform
+var resetBtn = document.getElementById('btn-reset-transform');
+if (resetBtn) {
+  resetBtn.addEventListener('click', function () {
+    ['x', 'y', 'z'].forEach(function (axis) {
+      var ps = document.querySelector('.geo-pos-' + axis);
+      var rs = document.querySelector('.geo-rot-' + axis);
+      if (ps) { ps.value = 0; ps.dispatchEvent(new Event('input')); }
+      if (rs) { rs.value = 0; rs.dispatchEvent(new Event('input')); }
+    });
+    modelParent.position.set(0, 0, 0);
+    modelParent.rotation.set(0, 0, 0);
+  });
+}
 
 // Axis mapping: Three.js Y=up, Z=depth. Prototype labels Y/Z are swapped.
 var posMap = { x: 'x', y: 'z', z: 'y' };
