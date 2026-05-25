@@ -146,6 +146,8 @@
   .mix-paints { font-size: 13px; color: var(--muted); display: block; margin-top: 2px; }
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
   <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
@@ -191,68 +193,51 @@
 
 <script>
   function fmtRatio(entries) { return entries.map(function(e){ return e.paint; }).join(' : ') + ' = ' + entries.map(function(e){ return e.parts; }).join(' : '); }
-  // [Hook] save/load recipes via API
-  function _fmtPaints_unused(entries) { return entries.map(function(e){ return e.paint + '\xd7' + e.parts; }).join(' + '); }
-  var recipes = [
-    { name:"极限战士蓝甲高光", tags:["蓝色系","高光"], target:"#4A7AC2", date:"2026-05-20", mixes:[
-      { entries:[
-        {paint:"AV 70.951 白", parts:3},
-        {paint:"田宫 X-7 红", parts:1},
-        {paint:"蓝", parts:2}
-      ], color:"#4C7DC5" }
-    ]},
-    { name:"NMM 金色高光", tags:["金属","高光"], target:"#D4A574", date:"2026-05-18", mixes:[
-      { entries:[
-        {paint:"郡士 C004", parts:3},
-        {paint:"AV 70.951", parts:2}
-      ], color:"#D8A573" }
-    ]},
-    { name:"暗精皮肤底色", tags:["肤色"], target:"#8B5A3C", date:"2026-05-15", mixes:[
-      { entries:[
-        {paint:"AK 11001", parts:5}
-	      ], color:"#8D5C3E" }
-	    ]},
-	    { name:"血天使红甲", tags:["红色系"], target:"#C83232", date:"2026-05-12", mixes:[
-	      { entries:[
-	        {paint:"田宫 X-7 红", parts:4},
-	        {paint:"田宫 X-1 黑", parts:1}
-	      ], color:"#C23030" },
-	      { entries:[
-	        {paint:"AV 70.909 朱红", parts:3},
-	        {paint:"AV 70.814 深红", parts:2}
-	      ], color:"#C43538" }
-	    ]},
-	    { name:"死亡守卫朽绿", tags:["绿色系"], target:"#6B7C3A", date:"2026-05-08", mixes:[
-	      { entries:[
-	        {paint:"AV 70.881 黄绿", parts:3},
-	        {paint:"田宫 XF-1 哑黑", parts:1},
-	        {paint:"AV 70.951 白", parts:1}
-	      ], color:"#6D7E3C" }
-	    ]},
-	    { name:"白色疤痕冷白", tags:["白色系","高光"], target:"#E8E8E8", date:"2026-05-02", mixes:[
-	      { entries:[
-	        {paint:"AV 70.951 白", parts:5},
-	        {paint:"AV 70.904 深蓝", parts:1}
-	      ], color:"#E6E6EA" }
-	    ]},
-	    { name:"熔岩地台渐变", tags:["地形","红色系","金属"], target:"#FF6A00", date:"2026-04-28", mixes:[
-	      { entries:[
-	        {paint:"田宫 X-6 橙", parts:3},
-	        {paint:"田宫 X-7 红", parts:2},
-	        {paint:"田宫 X-12 金", parts:1}
-	      ], color:"#FF6C08" }
-	    ]},
-	    { name:"铁手军团冷铁", tags:["金属"], target:"#7A7A80", date:"2026-04-20", mixes:[
-	      { entries:[
-	        {paint:"郡士 C004 黑铁", parts:4},
-	        {paint:"郡士 C001 白", parts:1}
-	      ], color:"#7B7B82" }
-	    ]}
-	  ];
+  var recipes = [];
   var filter = 'all';
 
+  function loadRecipes() {
+    var params = filter !== 'all' ? { tag: filter } : {};
+    var q = (document.getElementById('search')?.value || '').toLowerCase();
+    if (q) params.search = q;
+    window.getRecipes(params).then(function(list) { recipes = list; render(); }).catch(function() { recipes = []; render(); });
+  }
   function render() {
-    var q = (document.getElementById('search').value || '').toLowerCase();
+    var grid = document.getElementById('recipe-grid');
+    if (!grid) return;
+    var html = '';
+    for (var i = 0; i < recipes.length; i++) {
+      var r = recipes[i];
+      var hex = '#' + [r.targetR, r.targetG, r.targetB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+      var tags = (r.tags || '').split(',').filter(Boolean);
+      html += '<div class="card" onclick="showDetail(\'' + r.id + '\')">' +
+        '<div class="swatch" style="background:' + hex + '"></div>' +
+        '<div class="info"><div class="title">' + r.name + '</div>' +
+        '<div class="meta">' + tags.map(function(t) { return '<span class="tag">' + t.trim() + '</span>'; }).join('') + '</div></div>' +
+        '<button class="del-btn" onclick="event.stopPropagation();deleteRecipeById(\'' + r.id + '\')">&times;</button></div>';
+    }
+    grid.innerHTML = html || '<div class="empty">还没有保存配方，去调色引擎试试</div>';
+  }
+  function deleteRecipeById(id) {
+    if (!confirm('删除此配方？')) return;
+    window.deleteRecipe(id).then(function() { loadRecipes(); }).catch(function(){});
+  }
+  function showDetail(id) {
+    window.getRecipe(id).then(function(r) {
+      var hex = '#' + [r.targetR, r.targetG, r.targetB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+      alert('配方: ' + r.name + '\n目标色: ' + hex + '\n备注: ' + (r.notes || '无'));
+    }).catch(function(){});
+  }
+  document.getElementById('search')?.addEventListener('input', render);
+  document.querySelectorAll('.chip-scroll .chip')?.forEach(function(c) {
+    c.addEventListener('click', function() {
+      document.querySelectorAll('.chip-scroll .chip').forEach(function(x) { x.classList.remove('active'); });
+      c.classList.add('active');
+      filter = c.dataset.filter;
+      loadRecipes();
+    });
+  });
+  loadRecipes();
     var f = recipes.filter(function(r) {
       if (filter !== 'all' && r.tags.indexOf(filter) === -1) return false;
       if (q && r.name.toLowerCase().indexOf(q) === -1 && r.tags.join(' ').toLowerCase().indexOf(q) === -1) return false;

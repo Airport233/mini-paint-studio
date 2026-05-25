@@ -130,3 +130,14 @@ window.deleteStl = async function(id) {
   if (!res.ok) throw new Error('删除失败');
   return res.json();
 };
+
+// Recipes
+window.saveRecipe = async function(data) { return api('POST', '/recipes', data); };
+window.getRecipes = async function(params) {
+  var qs = '';
+  if (params) { var sp = new URLSearchParams(); Object.keys(params).forEach(function(k) { if (params[k]) sp.append(k, params[k]); }); qs = '?' + sp.toString(); }
+  return api('GET', '/recipes' + qs);
+};
+window.getRecipe = async function(id) { return api('GET', '/recipes/' + id); };
+window.updateRecipe = async function(id, data) { return api('PUT', '/recipes/' + id, data); };
+window.deleteRecipe = async function(id) { return api('DELETE', '/recipes/' + id); };
