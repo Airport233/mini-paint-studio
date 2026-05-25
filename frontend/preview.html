@@ -1463,7 +1463,7 @@ function animate() {
 animate();
 
 // ── STL server sync ──
-(function refreshStlList() {
+function refreshStlList() {
   var sel = document.getElementById('stl-select');
   var ct = document.getElementById('stl-list-container');
   if (!sel || !localStorage.getItem('token')) return;
@@ -1476,7 +1476,8 @@ animate();
       }).join('');
     }
   }).catch(function(){});
-})();
+}
+refreshStlList();
 
 function loadStlFromServer(id) {
   window.getStls().then(function(list) {
