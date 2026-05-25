@@ -159,6 +159,7 @@
     overflow-y: auto;
     align-items: start;
     padding-right: 4px;
+    touch-action: pan-y;
   }
   @media (max-width: 900px) { .control-strip { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) { .control-strip { grid-template-columns: 1fr; } }
@@ -1218,6 +1219,7 @@ renderer.domElement.addEventListener('wheel', function (e) {
 
 // ── Model transform controls ──
 var modelParent = new THREE.Group();
+modelParent.rotation.order = 'YXZ'; // avoid gimbal lock
 scene.remove(model);
 scene.add(modelParent);
 modelParent.add(model);
