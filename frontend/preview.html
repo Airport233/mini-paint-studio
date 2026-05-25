@@ -1027,7 +1027,7 @@ function syncMaterialColor(r, g, b) {
       var g = parseInt(document.getElementById('mat-g').value) || 128;
       var b = parseInt(document.getElementById('mat-b').value) || 128;
       syncMaterialColor(r, g, b);
-      debouncedSave();
+      saveState();
     });
   }
 });
@@ -1368,12 +1368,6 @@ if (pickClose) {
     document.getElementById('pick-result').classList.remove('visible');
   };
 }
-
-// Force save before navigating away
-window.addEventListener('beforeunload', function () {
-  if (saveTimer) clearTimeout(saveTimer);
-  saveState();
-});
 
 // ── Resize + render loop ──
 function resize() {
