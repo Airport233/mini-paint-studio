@@ -456,7 +456,6 @@
             </div>
           </div>
 
-          </div>
 
         </div>
         <button class="btn btn-ghost btn-sm" id="add-light-btn" style="width:100%;justify-content:center;gap:4px">
@@ -839,7 +838,7 @@ lightList.addEventListener('click', function(e) {
 });
 
 // ---- Add light ----
-var lightIdCounter = 1;
+var lightIdCounter = 2;
 document.getElementById('add-light-btn').addEventListener('click', function() {
   var id = lightIdCounter++;
   var el = document.createElement('div');
@@ -933,9 +932,13 @@ controls.enableDamping = true;
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
-const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-mainLight.position.set(2, 3, 2);
-scene.add(mainLight);
+const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+light1.position.set(2, 3, 2);
+scene.add(light1);
+
+const light2 = new THREE.DirectionalLight(0xffffff, 0.6);
+light2.position.set(0, 3, -2);
+scene.add(light2);
 
 // ── Grid ──
 scene.add(new THREE.GridHelper(10, 20, 0x666666, 0x444444));
