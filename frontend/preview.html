@@ -1223,6 +1223,15 @@ var rotMap = { x: 'x', y: 'z', z: 'y' };
   }
 });
 
+// ── Init: reset to defaults on page load ──
+syncMaterialColor(128, 128, 128);
+document.getElementById('rough-slider').value = 0.5;
+document.getElementById('rough-val').textContent = '0.50';
+document.getElementById('metal-slider').value = 0;
+document.getElementById('metal-val').textContent = '0.00';
+material.roughness = 0.5;
+material.metalness = 0;
+
 // ── Canvas picker ──
 var eyedropperBtn = document.getElementById('btn-eyedropper-canvas');
 if (eyedropperBtn) {
