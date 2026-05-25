@@ -1332,10 +1332,7 @@ if (eyedropperBtn) {
         var tempCanvas = document.createElement('canvas');
         tempCanvas.width = img.width; tempCanvas.height = img.height;
         tempCanvas.getContext('2d').drawImage(img, 0, 0);
-        tempCanvas.style.cursor = 'crosshair';
-        tempCanvas.style.position = 'absolute';
-        tempCanvas.style.inset = '0';
-        tempCanvas.style.zIndex = '20';
+        tempCanvas.style.cssText = 'cursor:crosshair;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:20';
         container.appendChild(tempCanvas);
         tempCanvas.addEventListener('click', function (e) {
           var rect = tempCanvas.getBoundingClientRect();
