@@ -689,6 +689,9 @@ function loadState() {
         list.appendChild(el);
       });
       lightIdCounter = st.lights.length;
+      // Force main light name
+      var firstName = list.querySelector('.light-row[data-light-id="0"] .light-name');
+      if (firstName) firstName.textContent = '主光源';
       lucide.createIcons();
     }
   } catch (_) {}
