@@ -40,6 +40,9 @@ public class PaintController {
             @Valid @RequestBody PaintCreateRequest request) {
         try {
             return ResponseEntity.ok(paintService.create(user.getId(), request));
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(409, "该品牌下已存在相同色号的漆料"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse(409, e.getMessage()));
