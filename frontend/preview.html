@@ -922,8 +922,20 @@ document.getElementById('add-light-btn').addEventListener('click', function() {
   var newLight = new THREE.PointLight(0xffffff, 2, 10);
   var angle = (id * 1.2) % (Math.PI * 2);
   var radius = 3.5 + (id % 3) * 0.8;
-  newLight.position.set(Math.cos(angle) * radius, 2 + (id % 2) * 1.5, Math.sin(angle) * radius);
+  var lx = +(Math.cos(angle) * radius).toFixed(1);
+  var ly = +(2 + (id % 2) * 1.5).toFixed(1);
+  var lz = +(Math.sin(angle) * radius).toFixed(1);
+  newLight.position.set(lx, ly, lz);
   scene.add(newLight);
+  // Update DOM sliders to match computed position
+  el.querySelector('.light-pos-x').value = lx;
+  el.querySelector('.light-pos-y').value = ly;
+  el.querySelector('.light-pos-z').value = lz;
+  ['x','y','z'].forEach(function(a, i) {
+    var val = [lx, ly, lz][i];
+    var lbl = el.querySelector('.light-pos-' + a + '-val');
+    if (lbl) lbl.textContent = val.toFixed(1);
+  });
   rebuildMarkers();
   lucide.createIcons();
   saveState();
