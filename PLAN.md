@@ -652,7 +652,7 @@ Commit: `feat: add MixEngine page with target input, candidate display, and inte
 
 ## Phase 4: 3D Preview Core
 
-### Task 4.1: Scene Setup (R3F Canvas + Grid + Geometries)
+### [x] Task 4.1: Scene Setup — `79c3af5` (R3F Canvas + Grid + Geometries)
 
 - [ ] **Step 1: Create Scene.tsx**
 
@@ -697,7 +697,7 @@ export function Scene({ geometry, color }: { geometry: 'sphere' | 'cube' | 'cyli
 git commit -m "feat: add 3D scene with R3F Canvas, geometry selector, and default lighting（使用上述格式，标注 Subagent）"
 ```
 
-### Task 4.2: Material Panel
+### [x] Task 4.2: Material Panel — `d4cd97b`
 
 - [ ] **Step 1: Create MaterialPanel.tsx** — color swatch + button to open ColorPicker, roughness slider (0-1, step 0.01, default 0.5), metalness slider (0-1, step 0.01, default 0). All controls labels in Chinese (粗糙度/金属度). On change → update parent state → Scene re-renders
 
@@ -705,7 +705,7 @@ git commit -m "feat: add 3D scene with R3F Canvas, geometry selector, and defaul
 
 Commit: `feat: add material panel with color picker, roughness, and metalness sliders`（使用上述格式，标注 Subagent）
 
-### Task 4.3: Multi-Light System
+### [x] Task 4.3: Multi-Light System — `b5d822d`
 
 - [ ] **Step 1: Create LightDragHandler.ts** — custom hook returning { onPointerDown, onPointerMove, onPointerUp }. Uses Raycaster for hit-testing light markers against mouse position. Projects drag movement onto camera plane. Returns new position {x,y,z} on drag end.
 
