@@ -7,6 +7,7 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://unpkg.com/three@0.147.0/examples/js/loaders/STLLoader.js"></script>
 <style>
   :root {
     --bg:           #313338;
@@ -768,7 +769,32 @@ function handleSTL(file) {
     stlStatus.textContent = '请选择 .stl 格式文件';
     return;
   }
-  stlStatus.textContent = '[Hook] ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB) → STLLoader.parse()';
+  stlStatus.textContent = '加载中: ' + file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var geom = new THREE.STLLoader().parse(e.target.result);
+      geom.computeBoundingBox();
+      var bb = geom.boundingBox;
+      var center = new THREE.Vector3();
+      bb.getCenter(center);
+      geom.translate(-center.x, -center.y, -center.z);
+      var size = new THREE.Vector3();
+      bb.getSize(size);
+      var maxDim = Math.max(size.x, size.y, size.z);
+      if (maxDim > 0) {
+        var scale = 2.0 / maxDim;
+        geom.scale(scale, scale, scale);
+      }
+      model.geometry = geom;
+      stlStatus.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB) — 已加载';
+      // Deselect built-in geometry chips
+      document.querySelectorAll('.chip[data-geo]').forEach(function(c) { c.classList.remove('active'); });
+    } catch (ex) {
+      stlStatus.textContent = '解析失败: ' + ex.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 // ---- Light row expand/collapse ----
