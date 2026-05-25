@@ -865,6 +865,7 @@ lightList.addEventListener('click', function(e) {
 // ---- Add light ----
 var lightIdCounter = 1;
 document.getElementById('add-light-btn').addEventListener('click', function() {
+  if (lightList.querySelectorAll('.light-row').length >= 6) return;
   var id = lightIdCounter++;
   var el = document.createElement('div');
   el.className = 'light-row expanded';
