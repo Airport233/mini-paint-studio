@@ -1,7 +1,7 @@
 // Shared API module for HobbyMix
 const API_BASE = '/api';
 
-async function api(method, path, body) {
+window.api = async function(method, path, body) {
   const opts = {
     method,
     headers: { 'Content-Type': 'application/json' },
@@ -21,10 +21,9 @@ async function api(method, path, body) {
     throw new Error(err.message || '请求失败');
   }
   return res.json();
-}
+};
 
-// Auth
-async function authRegister(email, password) {
+window.authRegister = async function(email, password) {
   const res = await fetch(API_BASE + '/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -35,9 +34,9 @@ async function authRegister(email, password) {
     throw new Error(err.message || '注册失败');
   }
   return res.json();
-}
+};
 
-async function authLogin(email, password) {
+window.authLogin = async function(email, password) {
   const res = await fetch(API_BASE + '/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -48,19 +47,18 @@ async function authLogin(email, password) {
     throw new Error(err.message || '登录失败');
   }
   return res.json();
-}
+};
 
-async function authForgotPassword(email) {
+window.authForgotPassword = async function(email) {
   const res = await fetch(API_BASE + '/auth/forgot-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   });
   return res.json();
-}
+};
 
-// Paints
-async function getPaints(params) {
+window.getPaints = async function(params) {
   let qs = '';
   if (params) {
     const sp = new URLSearchParams();
@@ -68,35 +66,32 @@ async function getPaints(params) {
     qs = '?' + sp.toString();
   }
   return api('GET', '/paints' + qs);
-}
+};
 
-async function createPaint(data) {
+window.createPaint = async function(data) {
   return api('POST', '/paints', data);
-}
+};
 
-async function updatePaint(id, data) {
+window.updatePaint = async function(id, data) {
   return api('PUT', '/paints/' + id, data);
-}
+};
 
-async function deletePaint(id) {
+window.deletePaint = async function(id) {
   return api('DELETE', '/paints/' + id);
-}
+};
 
-// Auth guard
+window.postMix = async function(r, g, b) {
+  return api('POST', '/mix', { r, g, b });
+};
+
 function requireAuth() {
   if (!localStorage.getItem('token')) {
     window.location.href = '/auth';
   }
 }
 
-// Logout
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('email');
   window.location.href = '/auth';
-}
-
-// Mix
-async function postMix(r, g, b) {
-  return api('POST', '/mix', { r, g, b });
 }
