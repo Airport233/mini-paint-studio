@@ -872,7 +872,7 @@ Commit: `feat: wire cross-page navigation, ColorWheel integration, and complete 
 
 ## Phase 9: Containerization + CI
 
-### Task 9.1: Backend Dockerfile
+### [x] Task 9.1: Backend Dockerfile — `1023fba`
 
 ```
 FROM maven:3.9-eclipse-temurin-17 AS build
@@ -890,7 +890,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-### Task 9.2: Frontend Dockerfile + Nginx Config
+### [x] Task 9.2: Frontend Dockerfile + Nginx Config — `1023fba`
 
 ```
 FROM node:20-alpine AS build
@@ -917,7 +917,7 @@ server {
 }
 ```
 
-### Task 9.3: Docker Compose
+### [x] Task 9.3: Docker Compose — `1023fba`
 
 ```yaml
 services:
@@ -937,7 +937,7 @@ services:
 volumes: {pgdata:, uploads:, stl_files:}
 ```
 
-### Task 9.4: GitHub Actions CI
+### [x] Task 9.4: GitHub Actions CI — `6db810e`
 
 ```yaml
 name: CI
@@ -958,7 +958,7 @@ jobs:
             {run: docker compose build}]
 ```
 
-### Task 9.5: README.md
+### [x] Task 9.5: README.md — `1023fba`
 
 Standard sections: project introduction, tech stack, quick start (docker compose up), dev setup (backend + frontend separately), directory structure, environment variables, API overview, license.
 
