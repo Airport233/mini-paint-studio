@@ -210,10 +210,12 @@
       var r = recipes[i];
       var hex = '#' + [r.targetR, r.targetG, r.targetB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
       var tags = (r.tags || '').split(',').filter(Boolean);
+      var date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('zh-CN') : '';
       html += '<div class="card" onclick="showDetail(\'' + r.id + '\')">' +
-        '<div class="swatch" style="background:' + hex + '"></div>' +
-        '<div class="info"><div class="title">' + r.name + '</div>' +
-        '<div class="meta">' + tags.map(function(t) { return '<span class="tag">' + t.trim() + '</span>'; }).join('') + '</div></div>' +
+        '<div class="color-row"><div class="swatch-dot" style="background:' + hex + '"></div>' +
+        '<div class="name">' + r.name + '</div></div>' +
+        '<div class="tags">' + tags.map(function(t) { return '<span class="tag">' + t.trim() + '</span>'; }).join('') + '</div>' +
+        '<div class="meta">' + date + '</div>' +
         '<button class="del-btn" onclick="event.stopPropagation();deleteRecipeById(\'' + r.id + '\')">&times;</button></div>';
     }
     grid.innerHTML = html || '<div class="empty">还没有保存配方，去调色引擎试试</div>';
