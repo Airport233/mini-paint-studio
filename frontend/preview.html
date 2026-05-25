@@ -648,6 +648,9 @@ function makeLightHTML(l) {
     '<div class="drawer-actions"><button class="btn btn-ghost btn-sm delete-light-btn">移除</button></div></div>';
 }
 function loadState() {
+  // Clear stale stored state to flush old light names
+  localStorage.removeItem('hobbymix_preview');
+  return {};
   try {
     var raw = null;
     try { raw = JSON.parse(window.name || '{}')[STORE_KEY] || localStorage.getItem(STORE_KEY); } catch (_) { raw = localStorage.getItem(STORE_KEY); }
