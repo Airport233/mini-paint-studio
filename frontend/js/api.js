@@ -95,3 +95,8 @@ function logout() {
   localStorage.removeItem('email');
   window.location.href = '/auth';
 }
+
+// Mix
+async function postMix(r, g, b) {
+  return api('POST', '/mix', { r, g, b });
+}

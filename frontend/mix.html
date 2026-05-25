@@ -373,27 +373,29 @@
     });
   });
 
-  // ---- Compute (mock) ----
+  // ---- Compute (real API) ----
   function compute() {
-    var hex = document.getElementById('hex-input').value;
-    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+    var r = parseInt(document.getElementById('r-input').value) || 128;
+    var g = parseInt(document.getElementById('g-input').value) || 128;
+    var b = parseInt(document.getElementById('b-input').value) || 128;
 
-    // Hook: POST /api/mix {r, g, b} → candidates[]
-    var candidates = [
-      { paints:'郡士 C004 (3份) + AV 70.951 (2份)', color:'#D8A573', dev:'ΔE 2.4' },
-      { paints:'田宫 X-7 (1份) + 盖亚 002 (4份) + 白 (1份)', color:'#CF9E6E', dev:'ΔE 5.1' },
-      { paints:'AK 11001 (5份) + AV 70.951 (1份)', color:'#C89560', dev:'ΔE 8.7' }
-    ];
-
-    document.getElementById('candidates').innerHTML = candidates.map(function(c) {
-      return '<div class="candidate">'
-        + '<div class="mini" style="background:' + c.color + '"></div>'
-        + '<div class="info"><div class="title">' + c.paints + '</div>'
-        + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
-        + '<span class="delta">' + c.dev + '</span></div>';
-    }).join('');
-    document.getElementById('status-msg').textContent =
-      '基于库存 10 种漆料 + 黑白兜底 · 已匹配 ' + candidates.length + ' 个方案';
+    document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算中...</div></div></div>';
+    postMix(r, g, b).then(function(data) {
+      var list = data.candidates || [];
+      document.getElementById('candidates').innerHTML = list.map(function(c, i) {
+        var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+        var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
+        return '<div class="candidate">'
+          + '<div class="mini" style="background:' + hex + '"></div>'
+          + '<div class="info"><div class="title">' + partsText + '</div>'
+          + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
+          + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span></div>';
+      }).join('');
+      document.getElementById('status-msg').textContent =
+        (data.message || '') + ' · 已匹配 ' + list.length + ' 个方案';
+    }).catch(function() {
+      document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败，请确保已录入漆料并登录</div></div></div>';
+    });
   }
   // Read color from URL params (e.g. mix.html?r=212&g=165&b=116)
   // Used by "去调色" quick-jump from preview page
