@@ -744,9 +744,6 @@ var stlZone = document.getElementById('stl-upload-zone');
 var stlInput = document.getElementById('stl-input');
 var stlStatus = document.getElementById('stl-status');
 
-stlZone.addEventListener('click', function(e) {
-  if (e.target !== stlInput) stlInput.click();
-});
 
 stlZone.addEventListener('dragover', function(e) {
   e.preventDefault();
