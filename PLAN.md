@@ -776,7 +776,7 @@ Commit: `feat: add STL upload, auto-center/normalize, independent transform, and
 
 ## Phase 6: Recipe Management
 
-### Task 6.1: Recipe Backend
+### [x] Task 6.1: Recipe Backend — `cf1f79d`
 
 - [ ] **Step 1: Create Recipe entity** — id UUID PK, userId FK, name, tags TEXT[], targetR/G/B int, mixSnapshots JSONB, cmyRef JSONB, notes TEXT, sourceImagePath, createdAt, updatedAt
 
@@ -790,7 +790,7 @@ Commit: `feat: add STL upload, auto-center/normalize, independent transform, and
 
 Commit: `feat: add Recipe entity, service, and REST API with JSONB snapshot storage`（使用上述格式，标注 Subagent）
 
-### Task 6.2: Frontend Recipe Pages
+### [x] Task 6.2: Frontend Recipe Pages — `c198a8c`
 
 - [ ] **Step 1: Create recipeService.ts** — fetchRecipes, saveRecipe, updateRecipe, deleteRecipe
 
