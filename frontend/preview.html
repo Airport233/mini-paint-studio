@@ -1176,12 +1176,16 @@ scene.add(modelParent);
 modelParent.add(model);
 model.position.set(0, 0, 0);
 
+// Axis mapping: Three.js Y=up, Z=depth. Prototype labels Y/Z are swapped.
+var posMap = { x: 'x', y: 'z', z: 'y' };
+var rotMap = { x: 'x', y: 'z', z: 'y' };
+
 ['x', 'y', 'z'].forEach(function (axis) {
   var slider = document.querySelector('.geo-pos-' + axis);
   var label = document.querySelector('.geo-pos-' + axis + '-val');
   if (slider && label) {
     slider.addEventListener('input', function () {
-      modelParent.position[axis] = parseFloat(slider.value);
+      modelParent.position[posMap[axis]] = parseFloat(slider.value);
       label.textContent = parseFloat(slider.value).toFixed(1);
     });
   }
@@ -1195,7 +1199,7 @@ model.position.set(0, 0, 0);
       var rx = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-x').value) || 0);
       var ry = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-y').value) || 0);
       var rz = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-z').value) || 0);
-      modelParent.rotation.set(rx, ry, rz);
+      modelParent.rotation.set(rx, rotMap.y === 'z' ? rz : ry, rotMap.z === 'y' ? ry : rz);
       label.textContent = slider.value + '°';
     });
   }
