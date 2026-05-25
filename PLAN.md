@@ -634,7 +634,7 @@ Commit: `feat: add MixService with RGB exhaustive enumeration, built-in black/wh
 
 Commit: `feat: add MixController and mix DTOs`（使用上述格式，标注 Subagent）
 
-### Task 3.3: Frontend Mix Page
+### [x] Task 3.3: Frontend Mix Page — `121a57f`
 
 - [ ] **Step 1: Create src/services/mixService.ts** — postMix(r,g,b): Promise<MixResponse>
 
