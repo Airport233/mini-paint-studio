@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>3D 预览 — HobbyMix</title>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
 <style>
   :root {
     --bg:           #313338;
@@ -362,20 +370,12 @@
 
   <div class="preview-layout">
 
-    <div class="canvas-area">
-      <span class="viewport-badge">[Hook] Three.js Canvas</span>
-      <div class="canvas-placeholder">
-        <div class="canvas-icon"><i data-lucide="box" width="64" height="64"></i></div>
-        <p>Three.js / @react-three/fiber 渲染区域</p>
-        <p style="font-size:12px;margin-top:4px;color:var(--meta)">
-          [Hook] Canvas + OrbitControls + GridHelper + 环境贴图
-        </p>
-      </div>
-      <button class="canvas-eyedropper" id="btn-eyedropper-canvas"><i data-lucide="pipette" class="nav-icon"></i> 取色器</button>
+    <div class="canvas-area" id="canvas-container">
+      <button class="canvas-eyedropper" id="btn-eyedropper-canvas"><i data-lucide="pipette"></i> 取色器</button>
       <div class="pick-result" id="pick-result">
         <div class="pick-swatch" id="pick-swatch"></div>
         <div class="pick-rgb">R:<span id="pick-r">—</span> G:<span id="pick-g">—</span> B:<span id="pick-b">—</span></div>
-        <a class="pick-goto" id="pick-goto" href="#"><i data-lucide="flask-conical" class="nav-icon"></i> 去调色</a>
+        <a class="pick-goto" id="pick-goto" href="#"><i data-lucide="flask-conical"></i> 去调色</a>
         <button class="pick-close" id="pick-close" type="button" title="关闭">&times;</button>
       </div>
     </div>
@@ -953,32 +953,6 @@ document.getElementById('add-light-btn').addEventListener('click', function() {
 });
 
 // ---- Action buttons ----
-document.getElementById('btn-eyedropper-canvas').addEventListener('click', async function() {
-  // EyeDropper API — picks any pixel on screen, no screenshot needed.
-  // Falls back to material native picker if API unavailable.
-  if (window.EyeDropper) {
-    try {
-      var result = await new EyeDropper().open();
-      var hex = result.sRGBHex;
-      var rgb = rgbFromHex(hex);
-      matR.value = rgb[0]; matG.value = rgb[1]; matB.value = rgb[2];
-      syncMatFromRgb(rgb[0], rgb[1], rgb[2]);
-      // Show pick result: swatch + RGB + quick-jump to mix page with color pre-filled
-      var pr = document.getElementById('pick-result');
-      document.getElementById('pick-swatch').style.background = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
-      document.getElementById('pick-r').textContent = rgb[0];
-      document.getElementById('pick-g').textContent = rgb[1];
-      document.getElementById('pick-b').textContent = rgb[2];
-      document.getElementById('pick-goto').href = 'mix.html?r=' + rgb[0] + '&g=' + rgb[1] + '&b=' + rgb[2];
-      pr.classList.add('visible');
-    } catch (_) { /* user cancelled */ }
-  } else {
-    matNative.click();
-  }
-});
-document.getElementById('pick-close').addEventListener('click', function () {
-  document.getElementById('pick-result').classList.remove('visible');
-});
 document.getElementById('btn-save').addEventListener('click', function() {
   saveState();
   // Hook: POST /api/lighting-presets ← current scene state
@@ -989,5 +963,149 @@ saveState(); // ensure a fresh save on first visit
 lucide.createIcons();
 </script>
 <script src="js/layout.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Scene setup ──
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#808080');
+
+const camera = new THREE.PerspectiveCamera(50, 2, 0.1, 100);
+camera.position.set(3, 2, 5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+container.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// ── Lights ──
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
+
+const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+light1.position.set(2, 3, 2);
+scene.add(light1);
+
+const light2 = new THREE.DirectionalLight(0xffffff, 0.6);
+light2.position.set(0, 3, -2);
+scene.add(light2);
+
+// ── Grid ──
+scene.add(new THREE.GridHelper(10, 20, 0x666666, 0x444444));
+
+// ── Geometry ──
+const geometries = {
+  sphere: new THREE.SphereGeometry(1, 32, 32),
+  cube: new THREE.BoxGeometry(1.5, 1.5, 1.5),
+  cylinder: new THREE.CylinderGeometry(1, 1, 2, 32),
+};
+let currentGeo = 'sphere';
+const material = new THREE.MeshStandardMaterial({ color: '#808080', roughness: 0.5, metalness: 0 });
+let model = new THREE.Mesh(geometries[currentGeo], material);
+scene.add(model);
+
+// ── Geometry selector ──
+document.querySelectorAll('.chip[data-geo]').forEach(function (chip) {
+  chip.addEventListener('click', function () {
+    document.querySelectorAll('.chip[data-geo]').forEach(function (c) { c.classList.remove('active'); });
+    chip.classList.add('active');
+    currentGeo = chip.dataset.geo;
+    model.geometry = geometries[currentGeo];
+  });
+});
+
+// ── Material sliders ──
+['roughness', 'metalness'].forEach(function (prop) {
+  var slider = document.getElementById('slider-' + prop);
+  var val = document.getElementById('val-' + prop);
+  if (slider && val) {
+    slider.addEventListener('input', function () {
+      material[prop] = parseFloat(slider.value);
+      val.textContent = slider.value;
+    });
+  }
+});
+
+var hexInput = document.getElementById('hex-input');
+if (hexInput) {
+  hexInput.addEventListener('input', function () {
+    var hex = hexInput.value;
+    if (/^#[0-9a-fA-F]{6}$/.test(hex)) material.color.set(hex);
+  });
+}
+
+// ── Canvas picker ──
+var eyedropperBtn = document.getElementById('btn-eyedropper-canvas');
+if (eyedropperBtn) {
+  eyedropperBtn.addEventListener('click', function () {
+    var canvas = renderer.domElement;
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) {
+      // Use toDataURL + image approach
+      var img = new Image();
+      img.src = canvas.toDataURL();
+      img.onload = function () {
+        var tempCanvas = document.createElement('canvas');
+        tempCanvas.width = img.width; tempCanvas.height = img.height;
+        tempCanvas.getContext('2d').drawImage(img, 0, 0);
+        tempCanvas.style.cursor = 'crosshair';
+        tempCanvas.style.position = 'absolute';
+        tempCanvas.style.inset = '0';
+        tempCanvas.style.zIndex = '20';
+        container.appendChild(tempCanvas);
+        tempCanvas.addEventListener('click', function (e) {
+          var rect = tempCanvas.getBoundingClientRect();
+          var x = Math.round((e.clientX - rect.left) * (tempCanvas.width / rect.width));
+          var y = Math.round((e.clientY - rect.top) * (tempCanvas.height / rect.height));
+          var px = tempCanvas.getContext('2d').getImageData(x, y, 1, 1).data;
+          showPickResult(px[0], px[1], px[2]);
+          tempCanvas.remove();
+        });
+      };
+    }
+  });
+}
+
+function showPickResult(r, g, b) {
+  var pr = document.getElementById('pick-result');
+  if (!pr) return;
+  document.getElementById('pick-swatch').style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
+  document.getElementById('pick-r').textContent = r;
+  document.getElementById('pick-g').textContent = g;
+  document.getElementById('pick-b').textContent = b;
+  document.getElementById('pick-goto').href = '/mix?r=' + r + '&g=' + g + '&b=' + b;
+  pr.classList.add('visible');
+}
+
+// Clean up old close handler
+var pickClose = document.getElementById('pick-close');
+if (pickClose) {
+  pickClose.onclick = function () {
+    document.getElementById('pick-result').classList.remove('visible');
+  };
+}
+
+// ── Resize + render loop ──
+function resize() {
+  var rect = container.getBoundingClientRect();
+  renderer.setSize(rect.width, rect.height);
+  camera.aspect = rect.width / Math.max(rect.height, 1);
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
 </body>
 </html>
