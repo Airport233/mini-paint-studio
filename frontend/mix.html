@@ -394,23 +394,26 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }).then(function(data) {
-      var list = data.candidates || [];
-      var cmy = data.cmyRef || [];
-      var html = list.map(function(c) {
-        var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
-        var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
-        return '<div class="candidate">'
-          + '<div class="mini" style="background:' + hex + '"></div>'
-          + '<div class="info"><div class="title">' + partsText + '</div>'
-          + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
-          + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span></div>';
-      }).join('');
-      var cmyText = cmy.map(function(p) { return p.name + ' ' + p.parts + '份'; }).join(', ');
-      html += '<div style="margin-top:16px;padding:12px;background:var(--surface-warm);border-radius:var(--radius-sm);font-size:12px;color:var(--muted)">'
-        + '<strong>CMY 参考:</strong> ' + cmyText + '</div>';
-      document.getElementById('candidates').innerHTML = html;
-      document.getElementById('status-msg').textContent =
-        (data.message || '') + ' · 已匹配 ' + list.length + ' 个方案';
+	      var list = data.candidates || [];
+	      var cmy = data.cmyRef || [];
+	      var html = '';
+	      if (cmy.length) {
+	        var cmyText = cmy.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
+	        html += '<div style="padding:14px 16px;background:var(--surface-warm);border:1px solid var(--accent);border-radius:var(--radius-md);margin-bottom:16px">'
+	          + '<div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">CMYK 理论参考</div>'
+	          + '<div style="font-size:14px;font-weight:600;color:var(--fg-2)">' + cmyText + '</div>'
+	          + '<div style="font-size:12px;color:var(--muted);margin-top:4px">青色 · 品红 · 黄色 — 理论混合基线，用于对照库存候选</div></div>';
+	      }
+	      html += list.map(function(c) {
+	        var hex = '#' + [c.mixedR, c.mixedG, c.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+	        var partsText = c.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
+	        return '<div class="candidate">'
+	          + '<div class="mini" style="background:' + hex + '"></div>'
+	          + '<div class="info"><div class="title">' + partsText + '</div>'
+	          + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
+	          + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span></div>';
+	      }).join('');
+	      document.getElementById('candidates').innerHTML = html;
     }).catch(function(err) {
       document.getElementById('candidates').innerHTML = '<div class="candidate"><div class="info"><div class="title">计算失败</div><div class="hint">' + err.message + '</div></div></div>';
       document.getElementById('status-msg').textContent = '请确保已登录并录入漆料';
