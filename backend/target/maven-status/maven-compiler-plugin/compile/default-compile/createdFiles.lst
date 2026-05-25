@@ -1,3 +1,4 @@
+com\minipaint\controller\StlController.class
 com\minipaint\model\dto\response\PaintPart.class
 com\minipaint\service\FileStorageService.class
 com\minipaint\model\entity\Paint.class
@@ -9,6 +10,7 @@ com\minipaint\security\JwtAuthenticationFilter.class
 com\minipaint\model\dto\request\MixRequest.class
 com\minipaint\model\dto\response\AuthResponse.class
 com\minipaint\service\impl\PaintServiceImpl.class
+com\minipaint\service\StlService.class
 com\minipaint\service\impl\FileStorageServiceImpl.class
 com\minipaint\service\UserService.class
 com\minipaint\service\MixService.class
@@ -20,12 +22,17 @@ com\minipaint\model\dto\request\RegisterRequest.class
 com\minipaint\service\impl\UserServiceImpl.class
 com\minipaint\service\impl\MixServiceRgbImpl.class
 com\minipaint\controller\PaintController.class
+com\minipaint\model\dto\request\StlRenameRequest.class
+com\minipaint\service\impl\StlServiceImpl.class
+com\minipaint\model\entity\StlFile.class
+com\minipaint\model\dto\response\StlResponse.class
 com\minipaint\model\dto\request\LoginRequest.class
 com\minipaint\model\dto\response\MixResponse.class
 com\minipaint\enums\Brand.class
 com\minipaint\security\JwtTokenProvider.class
 com\minipaint\model\entity\User.class
 com\minipaint\model\dto\response\MixCandidate.class
+com\minipaint\repository\StlFileRepository.class
 com\minipaint\controller\AuthController.class
 com\minipaint\model\dto\response\ErrorResponse.class
 com\minipaint\repository\UserRepository.class

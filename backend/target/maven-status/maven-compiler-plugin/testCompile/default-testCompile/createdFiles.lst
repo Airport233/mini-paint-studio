@@ -4,4 +4,5 @@ com\minipaint\repository\PaintRepositoryTest.class
 com\minipaint\model\dto\RequestValidationTest.class
 com\minipaint\security\JwtTokenProviderTest.class
 com\minipaint\service\MixServiceTest.class
+com\minipaint\repository\StlFileRepositoryTest.class
 com\minipaint\MiniPaintApplicationTests.class
