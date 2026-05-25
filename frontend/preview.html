@@ -925,16 +925,16 @@ document.getElementById('add-light-btn').addEventListener('click', function() {
   var lx = +(Math.cos(angle) * radius).toFixed(1);
   var ly = +(2 + (id % 2) * 1.5).toFixed(1);
   var lz = +(Math.sin(angle) * radius).toFixed(1);
-  newLight.position.set(lx, ly, lz);
+  newLight.position.set(lx, lz, ly);
   scene.add(newLight);
   // Update DOM sliders to match computed position
   el.querySelector('.light-pos-x').value = lx;
-  el.querySelector('.light-pos-y').value = ly;
-  el.querySelector('.light-pos-z').value = lz;
-  ['x','y','z'].forEach(function(a, i) {
-    var val = [lx, ly, lz][i];
+  el.querySelector('.light-pos-y').value = lz; // Y/Z swapped for proto labels
+  el.querySelector('.light-pos-z').value = ly;
+  var vals = { x: lx, y: lz, z: ly };
+  ['x','y','z'].forEach(function(a) {
     var lbl = el.querySelector('.light-pos-' + a + '-val');
-    if (lbl) lbl.textContent = val.toFixed(1);
+    if (lbl) lbl.textContent = vals[a].toFixed(1);
   });
   rebuildMarkers();
   lucide.createIcons();
