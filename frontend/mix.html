@@ -391,6 +391,12 @@
       },
       body: JSON.stringify({ r: r, g: g, b: b })
     }).then(function(res) {
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        window.location.href = '/auth';
+        return;
+      }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }).then(function(data) {
