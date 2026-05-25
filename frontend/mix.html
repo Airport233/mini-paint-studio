@@ -377,24 +377,25 @@
   var lastMixResult = null;
 
   function saveRecipe(index) {
-    if (!lastMixResult) return;
+    if (!lastMixResult) { alert('请先计算混色方案'); return; }
+    var candidates = lastMixResult.candidates || [];
+    if (index >= candidates.length) { alert('配方数据异常'); return; }
+    var candidate = candidates[index];
+    var hex = '#' + [candidate.mixedR, candidate.mixedG, candidate.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('');
+    var partsText = candidate.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ');
     var r = document.getElementById('r-input').value || 128;
     var g = document.getElementById('g-input').value || 128;
     var b = document.getElementById('b-input').value || 128;
-    var candidate = index >= 0 ? (lastMixResult.candidates || [])[index] : null;
-    var hex = candidate ? '#' + [candidate.mixedR, candidate.mixedG, candidate.mixedB].map(function(v) { return v.toString(16).padStart(2, '0'); }).join('') : ('#' + [r,g,b].map(function(v) { return parseInt(v).toString(16).padStart(2, '0'); }).join(''));
-    var partsText = candidate ? candidate.paints.map(function(p) { return p.name + ' (' + p.parts + '份)'; }).join(' + ') : 'CMYK 理论参考';
     document.getElementById('save-modal').style.display = 'flex';
     document.getElementById('save-preview').style.background = hex;
     document.getElementById('save-parts').value = partsText;
-    document.getElementById('save-name').value = candidate ? ('混色方案 #' + (index + 1)) : 'CMYK 理论参考';
+    document.getElementById('save-name').value = '混色方案 #' + (index + 1);
     document.getElementById('save-tags').value = '';
     document.getElementById('save-notes').value = '';
     document.getElementById('save-data').value = JSON.stringify({
       targetR: parseInt(r), targetG: parseInt(g), targetB: parseInt(b),
-      mixSnapshots: candidate ? JSON.stringify([candidate]) : '[]',
-      cmyRef: lastMixResult.cmyRef ? JSON.stringify(lastMixResult.cmyRef) : '[]',
-      isCmy: index < 0
+      mixSnapshots: JSON.stringify([candidate]),
+      cmyRef: lastMixResult.cmyRef ? JSON.stringify(lastMixResult.cmyRef) : '[]'
     });
   }
   function closeSaveModal() { document.getElementById('save-modal').style.display = 'none'; }
