@@ -388,15 +388,15 @@
     el.innerHTML = selectedTags.map(function(t) { return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--accent);color:#fff">' + t + '<span onclick="event.stopPropagation();removeTag(\'' + t + '\')" style="cursor:pointer;font-size:13px;line-height:1">&times;</span></span>'; }).join('');
     document.getElementById('save-tags').value = selectedTags.join(',');
   }
-  var ti = document.getElementById('tag-input'), td = document.getElementById('tag-dropdown');
-  var td = document.getElementById('tag-dropdown');
+  var td = null;
   function showTagDropdown() {
+    if (!td) td = document.getElementById('tag-dropdown');
+    if (!td) return;
     var m = knownTags.filter(function(t) { return selectedTags.indexOf(t) < 0; });
     td.innerHTML = m.map(function(t) { return '<div style="padding:6px 12px;cursor:pointer;font-size:13px;color:var(--fg)" onmousedown="event.preventDefault()" onclick="addTag(\'' + t + '\');td.style.display=\'none\'">' + t + '</div>'; }).join('');
     td.style.display = m.length ? 'block' : 'none';
   }
-  document.getElementById('tag-btn').addEventListener('click', function(e) { e.stopPropagation(); showTagDropdown(); });
-  document.addEventListener('click', function(e) { if (!e.target.closest('#tag-btn') && !e.target.closest('#tag-dropdown')) td.style.display = 'none'; });
+  document.addEventListener('click', function(e) { if (td && !e.target.closest('#tag-btn') && !e.target.closest('#tag-dropdown')) td.style.display = 'none'; });
 
   function openSaveModal(index) {
     if (!lastMixResult) { alert('请先计算混色方案'); return; }
@@ -519,7 +519,7 @@ lucide.createIcons();
 <div class="field"><label>名称</label><input type="text" id="save-name" placeholder="配方名称" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
 <div class="field"><label>标签</label>
 <div id="tag-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;min-height:24px"></div>
-<button id="tag-btn" onclick="event.stopPropagation();var d=document.getElementById('tag-dropdown');d.style.display=d.style.display==='block'?'none':'block'" style="width:100%;padding:8px 12px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit;text-align:left;cursor:pointer">选择标签 ▾</button>
+<button id="tag-btn" onclick="event.stopPropagation();showTagDropdown()" style="width:100%;padding:8px 12px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit;text-align:left;cursor:pointer">选择标签 ▾</button>
 <div id="tag-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-solid);border-radius:4px;max-height:120px;overflow-y:auto;z-index:100"></div>
 <input type="hidden" id="save-tags" value=""></div>
 <div class="field"><label>备注</label><input type="text" id="save-notes" placeholder="可选备注" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
