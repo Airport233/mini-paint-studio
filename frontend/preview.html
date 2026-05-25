@@ -1323,7 +1323,7 @@ var rotMap = { x: 'x', y: 'y', z: 'z' };
 // ── STL list management ──
 function loadStlList() {
   var select = document.getElementById("stl-select");
-  if (!select) return;
+  if (!select || !localStorage.getItem("token")) return;
   window.getStls().then(function(list) {
     select.innerHTML = "<option value=\"\">— 已保存的模型 —</option>" +
       list.map(function(s) { return "<option value=\"" + s.id + "\">" + s.displayName + "</option>"; }).join("");
