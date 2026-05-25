@@ -833,7 +833,11 @@ lightList.addEventListener('click', function(e) {
   if (row.getAttribute('data-light-id') === '0') return; // main light
   e.stopPropagation();
   if (lightList.querySelectorAll('.light-row').length <= 1) return;
+  var idx = parseInt(row.getAttribute('data-light-id'));
+  var lights = getLights();
+  if (lights[idx]) scene.remove(lights[idx]);
   row.remove();
+  rebuildMarkers();
   debouncedSave();
 });
 
@@ -1034,7 +1038,7 @@ document.getElementById('light-list').addEventListener('input', function(e) {
   var light = lights[idx];
   if (!light) {
     // New light — create one
-    light = new THREE.DirectionalLight(0xffffff, 1);
+    light = new THREE.PointLight(0xffffff, 2, 10);
     light.position.set(0, 3, 0);
     scene.add(light);
   }
@@ -1245,7 +1249,7 @@ function syncSceneFromUI() {
     var py2 = parseFloat(row.querySelector('.light-pos-y')?.value) || 0;
     var pz2 = parseFloat(row.querySelector('.light-pos-z')?.value) || 0;
 
-    var light = new THREE.DirectionalLight(0xffffff, 1);
+    var light = new THREE.PointLight(0xffffff, 2, 10);
     scene.add(light);
     light.color.setRGB(r2 / 255, g2 / 255, b2 / 255);
     light.intensity = intensity;
