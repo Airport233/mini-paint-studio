@@ -395,27 +395,6 @@
         <p class="hook-note" id="stl-status">[Hook] 读取 STL &rarr; Three.js BufferGeometry</p>
       </div>
 
-      <!-- Transform -->
-      <div class="panel">
-        <h3>变换</h3>
-        <div class="slider-row">
-          <label>旋转 X <span id="rot-x-val">0°</span></label>
-          <input type="range" min="-180" max="180" value="0" step="1" id="rot-x">
-        </div>
-        <div class="slider-row">
-          <label>旋转 Y <span id="rot-y-val">0°</span></label>
-          <input type="range" min="-180" max="180" value="0" step="1" id="rot-y">
-        </div>
-        <div class="slider-row">
-          <label>旋转 Z <span id="rot-z-val">0°</span></label>
-          <input type="range" min="-180" max="180" value="0" step="1" id="rot-z">
-        </div>
-        <div class="slider-row">
-          <label>高度偏移 <span id="height-val">0.0</span></label>
-          <input type="range" min="-3" max="3" value="0" step="0.1" id="height-offset">
-        </div>
-      </div>
-
       <!-- Lights -->
       <div class="panel">
         <h3>光源 <span style="font-weight:400;font-size:11px;color:var(--meta)">1&ndash;6 个</span></h3>
@@ -1197,28 +1176,30 @@ scene.add(modelParent);
 modelParent.add(model);
 model.position.set(0, 0, 0);
 
-['rot-x', 'rot-y', 'rot-z'].forEach(function (id, i) {
-  var el = document.getElementById(id);
-  var label = document.getElementById(id + '-val');
-  if (el) {
-    el.addEventListener('input', function () {
-      var rx = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-x').value) || 0);
-      var ry = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-y').value) || 0);
-      var rz = THREE.MathUtils.degToRad(parseFloat(document.getElementById('rot-z').value) || 0);
-      modelParent.rotation.set(rx, ry, rz);
-      if (label) label.textContent = el.value + '°';
+['x', 'y', 'z'].forEach(function (axis) {
+  var slider = document.querySelector('.geo-pos-' + axis);
+  var label = document.querySelector('.geo-pos-' + axis + '-val');
+  if (slider && label) {
+    slider.addEventListener('input', function () {
+      modelParent.position[axis] = parseFloat(slider.value);
+      label.textContent = parseFloat(slider.value).toFixed(1);
     });
   }
 });
 
-var heightSlider = document.getElementById('height-offset');
-var heightVal = document.getElementById('height-val');
-if (heightSlider) {
-  heightSlider.addEventListener('input', function () {
-    modelParent.position.y = parseFloat(heightSlider.value);
-    if (heightVal) heightVal.textContent = parseFloat(heightSlider.value).toFixed(1);
-  });
-}
+['x', 'y', 'z'].forEach(function (axis) {
+  var slider = document.querySelector('.geo-rot-' + axis);
+  var label = document.querySelector('.geo-rot-' + axis + '-val');
+  if (slider && label) {
+    slider.addEventListener('input', function () {
+      var rx = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-x').value) || 0);
+      var ry = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-y').value) || 0);
+      var rz = THREE.MathUtils.degToRad(parseFloat(document.querySelector('.geo-rot-z').value) || 0);
+      modelParent.rotation.set(rx, ry, rz);
+      label.textContent = slider.value + '°';
+    });
+  }
+});
 
 // ── Canvas picker ──
 var eyedropperBtn = document.getElementById('btn-eyedropper-canvas');
