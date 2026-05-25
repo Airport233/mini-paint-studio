@@ -863,7 +863,7 @@ lightList.addEventListener('click', function(e) {
 });
 
 // ---- Add light ----
-var lightIdCounter = 2;
+var lightIdCounter = 1;
 document.getElementById('add-light-btn').addEventListener('click', function() {
   var id = lightIdCounter++;
   var el = document.createElement('div');
@@ -918,6 +918,11 @@ document.getElementById('add-light-btn').addEventListener('click', function() {
       '</div>' +
     '</div>';
   lightList.appendChild(el);
+  // Create Three.js point light
+  var newLight = new THREE.PointLight(0xffffff, 2, 10);
+  newLight.position.set(0, 3, 0);
+  scene.add(newLight);
+  rebuildMarkers();
   lucide.createIcons();
   debouncedSave();
 });
