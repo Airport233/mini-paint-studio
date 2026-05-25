@@ -61,11 +61,9 @@ public class MixServiceRgbImpl implements MixService {
         List<MixCandidate> results = new ArrayList<>();
         int n = colors.size();
 
-        // 1-paint mixes
+        // 1-paint mixes — only 1 part each (parts count doesn't change the color)
         for (int i = 0; i < n; i++) {
-            for (int parts = 1; parts <= MAX_TOTAL_PARTS; parts++) {
-                results.add(makeCandidate(colors, paints, List.of(i), List.of(parts), tr, tg, tb));
-            }
+            results.add(makeCandidate(colors, paints, List.of(i), List.of(1), tr, tg, tb));
         }
 
         // 2-paint mixes
