@@ -397,6 +397,8 @@
           <div class="upload-hint">或点击选择 &middot; 仅 .stl 格式</div>
           <input type="file" accept=".stl" id="stl-input">
         </label>
+        <select id="stl-select" onchange="if(this.value)loadStlFromServer(this.value)" style="width:100%;margin-top:8px;padding:6px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:var(--radius-sm);color:var(--fg);font-size:12px;font-family:inherit"><option value="">— 已保存模型 —</option></select>
+        <div id="stl-list-container" style="margin-top:4px;font-size:11px;color:var(--muted)"></div>
         <p class="hook-note" id="stl-status">[Hook] 读取 STL &rarr; Three.js BufferGeometry</p>
       </div>
 
@@ -791,7 +793,7 @@ function handleSTL(file) {
       document.querySelectorAll('.chip[data-geo]').forEach(function(c) { c.classList.remove('active'); });
       // Auto-upload to server
       if (localStorage.getItem('token') && window.uploadStl) {
-        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; }).catch(function() {});
+        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; refreshStlList(); }).catch(function() {});
       }
     } catch (ex) {
       stlStatus.textContent = '解析失败: ' + ex.message;
@@ -1452,6 +1454,46 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+// ── STL server sync ──
+(function refreshStlList() {
+  var sel = document.getElementById('stl-select');
+  var ct = document.getElementById('stl-list-container');
+  if (!sel || !localStorage.getItem('token')) return;
+  window.getStls().then(function(list) {
+    sel.innerHTML = '<option value="">— 已保存模型 —</option>' +
+      list.map(function(s) { return '<option value="' + s.id + '">' + s.displayName + '</option>'; }).join('');
+    if (ct) {
+      ct.innerHTML = list.map(function(s) {
+        return '<span style="cursor:pointer;color:var(--danger);margin-left:8px" onclick="deleteStlFromServer(\'' + s.id + '\')">删除</span>';
+      }).join('');
+    }
+  }).catch(function(){});
+})();
+
+function loadStlFromServer(id) {
+  window.getStls().then(function(list) {
+    var found = list.find(function(x) { return x.id === id; });
+    if (!found) return;
+    stlStatus.textContent = '加载: ' + found.displayName;
+    fetch(found.filePath).then(function(r) { return r.arrayBuffer(); }).then(function(buf) {
+      var g = new THREE.STLLoader().parse(buf);
+      g.computeBoundingBox();
+      var bb = g.boundingBox, c2 = new THREE.Vector3(), sz = new THREE.Vector3();
+      bb.getCenter(c2); g.translate(-c2.x, -c2.y, -c2.z);
+      bb.getSize(sz); var m = Math.max(sz.x, sz.y, sz.z);
+      if (m > 0) g.scale(2/m, 2/m, 2/m);
+      model.geometry = g;
+      document.querySelectorAll('.chip[data-geo]').forEach(function(el){el.classList.remove('active');});
+      stlStatus.textContent = found.displayName + ' — 已加载';
+    }).catch(function(){ stlStatus.textContent = '加载失败'; });
+  });
+}
+
+function deleteStlFromServer(id) {
+  if (!confirm('删除此模型？')) return;
+  window.deleteStl(id).then(function(){ refreshStlList(); }).catch(function(){});
+}
 </script>
 </body>
 </html>
