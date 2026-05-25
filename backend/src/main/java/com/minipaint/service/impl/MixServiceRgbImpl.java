@@ -18,7 +18,7 @@ public class MixServiceRgbImpl implements MixService {
     private static final int MAX_TOTAL_PARTS = 6;
     private static final double TRACE_THRESHOLD = 0.1;
     private static final double DEVIATION_WARNING = 15.0;
-    private static final int TOP_N = 10;
+    private static final int TOP_N = 5;
 
     private final PaintRepository paintRepository;
 
@@ -43,7 +43,16 @@ public class MixServiceRgbImpl implements MixService {
 
         List<MixCandidate> candidates = enumerate(colors, paints, tr, tg, tb);
         candidates.sort(Comparator.comparingDouble(MixCandidate::getDeviation));
-        List<MixCandidate> topN = candidates.stream().limit(TOP_N).toList();
+
+        // Deduplicate by ratio key (1:1 = 2:2 = 3:3)
+        var seen = new HashSet<String>();
+        List<MixCandidate> unique = new ArrayList<>();
+        for (MixCandidate c : candidates) {
+            String key = ratioKey(c);
+            if (seen.add(key)) unique.add(c);
+        }
+
+        List<MixCandidate> topN = unique.stream().limit(TOP_N).toList();
 
         List<PaintPart> cmyRef = generateCmyRef(tr, tg, tb);
 
@@ -123,6 +132,21 @@ public class MixServiceRgbImpl implements MixService {
         mr /= total; mg /= total; mb /= total;
         double deviation = Math.sqrt(Math.pow(mr - tr, 2) + Math.pow(mg - tg, 2) + Math.pow(mb - tb, 2));
         return new MixCandidate(parts, mr, mg, mb, deviation);
+    }
+
+    private String ratioKey(MixCandidate c) {
+        var parts = c.getPaints().stream().map(PaintPart::getParts).toList();
+        int g = parts.stream().reduce(0, (a, b) -> gcd(a, b));
+        return c.getPaints().stream()
+                .map(p -> (p.getPaintId() != null ? p.getPaintId().toString() : p.getCode())
+                        + ":" + (p.getParts() / g))
+                .sorted().collect(java.util.stream.Collectors.joining("_"));
+    }
+
+    private int gcd(int a, int b) {
+        if (a == 0) return b;
+        if (b == 0) return a;
+        return gcd(b, a % b);
     }
 
     private List<PaintPart> generateCmyRef(int r, int g, int b) {
