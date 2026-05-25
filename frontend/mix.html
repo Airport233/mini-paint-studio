@@ -509,7 +509,7 @@
 lucide.createIcons();
 </script>
 <div class="overlay" id="save-modal" style="display:none" onclick="closeSaveModal()">
-<div class="modal" onclick="event.stopPropagation()" style="width:420px">
+<div class="modal" onclick="event.stopPropagation()" style="width:420px;overflow:visible">
 <h2>保存配方</h2>
 <div class="field"><label>预览</label><div id="save-preview" style="width:64px;height:64px;border-radius:8px;background:#808080;margin-bottom:8px"></div></div>
 <div class="field"><label>配比（只读）</label><input type="text" id="save-parts" readonly style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--muted);font-size:12px;font-family:inherit"></div>
@@ -518,7 +518,7 @@ lucide.createIcons();
 <div id="tag-chips" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;min-height:24px"></div>
 <div style="position:relative">
 <input type="text" id="tag-input" placeholder="输入标签回车添加" autocomplete="off" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit">
-<div id="tag-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-solid);border-radius:4px;max-height:120px;overflow-y:auto;z-index:10"></div>
+<div id="tag-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-solid);border-radius:4px;max-height:120px;overflow-y:auto;z-index:100"></div>
 </div>
 <input type="hidden" id="save-tags" value=""></div>
 <div class="field"><label>备注</label><input type="text" id="save-notes" placeholder="可选备注" style="width:100%;padding:8px;background:var(--surface-warm);border:1px solid var(--border-solid);border-radius:4px;color:var(--fg);font-size:14px;font-family:inherit"></div>
