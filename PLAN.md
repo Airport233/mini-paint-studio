@@ -736,7 +736,7 @@ Commit: `feat: add multi-light system with custom Raycaster drag, XYZ fine-tune,
 
 ## Phase 5: STL Support
 
-### Task 5.1: FileStorageService
+### [x] Task 5.1: FileStorageService — `e7f199a`
 
 - [ ] **Step 1: Create FileStorageService interface** — store(MultipartFile, String subdir): String path, delete(String path): void, toAccessUrl(String path): String
 
@@ -746,7 +746,7 @@ Commit: `feat: add multi-light system with custom Raycaster drag, XYZ fine-tune,
 
 Commit: `feat: add FileStorageService with local filesystem implementation`（使用上述格式，标注 Subagent）
 
-### Task 5.2: StlFile Entity + Service + Controller
+### [x] Task 5.2: StlFile Entity + Service + Controller — `08cdf19`
 
 - [ ] **Step 1: Create StlFile entity** — id UUID PK, userId FK, originalName, displayName, filePath, rotationX/Y/Z (default 0), heightOffset (default 0), fileSize bigint, createdAt
 
@@ -758,7 +758,7 @@ Commit: `feat: add FileStorageService with local filesystem implementation`（�
 
 Commit: `feat: add STL file entity, storage, and REST API`（使用上述格式，标注 Subagent）
 
-### Task 5.3: Frontend STL Upload + Transform
+### [x] Task 5.3: Frontend STL Upload — `1a88c42`
 
 - [ ] **Step 1: Create StlUploader.tsx** — file input (accept .stl, max 20MB), upload progress, on success → auto-add to geometry dropdown and auto-select
 
