@@ -1161,8 +1161,8 @@ document.getElementById('light-list').addEventListener('input', function(e) {
   if (e.target.classList.contains('light-pos-x') || e.target.classList.contains('light-pos-y') || e.target.classList.contains('light-pos-z')) {
     light.position.set(
       parseFloat(row.querySelector('.light-pos-x').value),
-      parseFloat(row.querySelector('.light-pos-y').value),
-      parseFloat(row.querySelector('.light-pos-z').value)
+      parseFloat(row.querySelector('.light-pos-z').value),
+      parseFloat(row.querySelector('.light-pos-y').value)
     );
   }
   rebuildMarkers();
