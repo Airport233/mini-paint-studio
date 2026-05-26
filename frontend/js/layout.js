@@ -4,7 +4,7 @@
   var links = [
     { href: '/', label: '首页', icon: 'home' },
     { href: '/paints', label: '漆料库', icon: 'palette' },
-    { href: '/mix', label: '调色引擎', icon: 'flask-conical' },
+    { href: '/mix', label: '混色引擎', icon: 'flask-conical' },
     { href: '/color-wheel', label: '色彩工具', icon: 'palette' },
     { href: '/preview', label: '3D 预览', icon: 'box' },
     { href: '/recipes', label: '配方库', icon: 'clipboard-list' },
