@@ -1890,6 +1890,7 @@ function applyPresetData(preset) {
     var bi = Math.min(255, Math.max(0, parseInt(b) || 0));
     matR.value = ri; matG.value = gi; matB.value = bi;
     syncMatFromRgb(ri, gi, bi);
+    syncMaterialColor(ri, gi, bi);
     localStorage.removeItem('preview:state');
   }
 })();
