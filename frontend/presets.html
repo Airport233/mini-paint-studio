@@ -183,9 +183,9 @@
     for (var i = 0; i < presets.length; i++) {
       var p = presets[i];
       var date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('zh-CN') : '';
-      var geoLabel = geoLabels[p.geometryType] || p.geometryType || '未知';
+      var geoLabel = p.geometryType === 'stl' && p.stlFileName ? ('STL: ' + escapeHtml(p.stlFileName)) : (geoLabels[p.geometryType] || p.geometryType || '未知');
       var coverHtml = p.coverImagePath
-        ? '<img src="' + p.coverImagePath + '" alt="" onerror="this.style.display=\'none\'">'
+        ? '<img class="cover-img" data-pid="' + p.id + '" alt="" style="width:100%;height:100%;object-fit:cover">'
         : '<div class="no-cover"><i data-lucide="image" class="nav-icon"></i><span>无封面</span></div>';
 
       html += '<div class="card">' +
@@ -200,6 +200,19 @@
     }
     grid.innerHTML = html;
     lucide.createIcons();
+    loadCoverImages();
+  }
+
+  function loadCoverImages() {
+    var token = localStorage.getItem('token');
+    if (!token) return;
+    document.querySelectorAll('.cover-img').forEach(function(img) {
+      var id = img.dataset.pid;
+      fetch('/api/lighting-presets/' + id + '/cover', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { if (r.ok) return r.blob(); throw new Error('no cover'); })
+        .then(function(blob) { img.src = URL.createObjectURL(blob); })
+        .catch(function() { img.style.display = 'none'; });
+    });
   }
 
   function escapeHtml(s) {

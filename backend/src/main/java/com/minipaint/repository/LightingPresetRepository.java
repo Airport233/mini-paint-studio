@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface LightingPresetRepository extends JpaRepository<LightingPreset, UUID> {
     List<LightingPreset> findByUserIdOrderByCreatedAtDesc(UUID userId);
+    List<LightingPreset> findByUserIdAndGeometryRefId(UUID userId, UUID geometryRefId);
 }

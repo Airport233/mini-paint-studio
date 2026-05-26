@@ -36,6 +36,9 @@ public class LightingPresetServiceImpl implements LightingPresetService {
         }
         preset.setMaterialSnapshot(request.getMaterialSnapshot());
         preset.setLightsSnapshot(request.getLightsSnapshot());
+        preset.setStlFileName(request.getStlFileName());
+        preset.setModelPos(request.getModelPos());
+        preset.setModelRot(request.getModelRot());
 
         if (request.getCoverImage() != null && !request.getCoverImage().isEmpty()) {
             String path = saveCoverImage(request.getCoverImage(), request.getName());
@@ -78,9 +81,14 @@ public class LightingPresetServiceImpl implements LightingPresetService {
         if (request.getLightsSnapshot() != null) {
             preset.setLightsSnapshot(request.getLightsSnapshot());
         }
+        if (request.getModelPos() != null) {
+            preset.setModelPos(request.getModelPos());
+        }
+        if (request.getModelRot() != null) {
+            preset.setModelRot(request.getModelRot());
+        }
         if (request.getCoverImage() != null && !request.getCoverImage().isEmpty()) {
             String path = saveCoverImage(request.getCoverImage(), request.getName() != null ? request.getName() : preset.getName());
-            // Delete old cover if exists
             if (preset.getCoverImagePath() != null) {
                 fileStorageService.delete(preset.getCoverImagePath());
             }

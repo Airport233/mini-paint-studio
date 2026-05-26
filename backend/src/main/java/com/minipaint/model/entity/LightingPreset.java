@@ -33,6 +33,15 @@ public class LightingPreset {
     @Column(name = "cover_image_path")
     private String coverImagePath;
 
+    @Column(name = "stl_file_name")
+    private String stlFileName;
+
+    @Column(name = "model_pos", columnDefinition = "TEXT")
+    private String modelPos;
+
+    @Column(name = "model_rot", columnDefinition = "TEXT")
+    private String modelRot;
+
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
@@ -74,6 +83,15 @@ public class LightingPreset {
 
     public String getCoverImagePath() { return coverImagePath; }
     public void setCoverImagePath(String coverImagePath) { this.coverImagePath = coverImagePath; }
+
+    public String getStlFileName() { return stlFileName; }
+    public void setStlFileName(String stlFileName) { this.stlFileName = stlFileName; }
+
+    public String getModelPos() { return modelPos; }
+    public void setModelPos(String modelPos) { this.modelPos = modelPos; }
+
+    public String getModelRot() { return modelRot; }
+    public void setModelRot(String modelRot) { this.modelRot = modelRot; }
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

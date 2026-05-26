@@ -4,10 +4,13 @@ import com.minipaint.model.dto.request.LightingPresetSaveRequest;
 import com.minipaint.model.dto.response.LightingPresetResponse;
 import com.minipaint.model.entity.User;
 import com.minipaint.service.LightingPresetService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,5 +54,15 @@ public class LightingPresetController {
                                     @PathVariable String id) {
         lightingPresetService.delete(user.getId(), UUID.fromString(id));
         return ResponseEntity.ok(Map.of("message", "已删除"));
+    }
+
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<byte[]> getCover(@AuthenticationPrincipal User user, @PathVariable String id) {
+        var preset = lightingPresetService.getById(user.getId(), UUID.fromString(id));
+        if (preset.getCoverImagePath() == null) return ResponseEntity.notFound().build();
+        try {
+            byte[] bytes = Files.readAllBytes(Path.of(preset.getCoverImagePath()));
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
+        } catch (Exception e) { return ResponseEntity.notFound().build(); }
     }
 }

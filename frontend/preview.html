@@ -644,9 +644,12 @@ function debouncedSave() {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(saveState, 150);
 }
+var restoringState = false;
 function saveState() {
+  if (restoringState) return;
   try {
     var geo = document.querySelector('.chip[data-geo].active');
+    var stl = document.querySelector('.chip[data-stl].active');
     var lights = [];
     document.querySelectorAll('.light-row').forEach(function(row) {
       lights.push({
@@ -660,7 +663,8 @@ function saveState() {
       });
     });
     var st = {
-      geometry: geo ? geo.dataset.geo : 'sphere',
+      geometry: stl ? 'stl' : (geo ? geo.dataset.geo : 'sphere'),
+      stlFileId: stl ? stl.dataset.stl : null,
       roughness: document.getElementById('rough-slider').value,
       metalness: document.getElementById('metal-slider').value,
       matColor: { r: +matR.value, g: +matG.value, b: +matB.value },
@@ -669,7 +673,6 @@ function saveState() {
       lights: lights
     };
     var js = JSON.stringify(st);
-    try { var d = window.name ? JSON.parse(window.name) : {}; d[STORE_KEY] = js; window.name = JSON.stringify(d); } catch (_) {}
     try { localStorage.setItem(STORE_KEY, js); } catch (_) {}
   } catch (_) {}
 }
@@ -698,16 +701,24 @@ function makeLightHTML(l) {
     (l.id !== 0 ? '<div class="drawer-actions"><button class="btn btn-ghost btn-sm delete-light-btn">移除</button></div>' : '') + '</div>';
 }
 function loadState() {
+  restoringState = true;
   try {
     var raw = null;
-    try { raw = JSON.parse(window.name || '{}')[STORE_KEY] || localStorage.getItem(STORE_KEY); } catch (_) { raw = localStorage.getItem(STORE_KEY); }
+    var raw = localStorage.getItem(STORE_KEY);
     if (!raw) return;
     var st = JSON.parse(raw);
 
     // Geometry
-    document.querySelectorAll('.chip').forEach(function(c) {
-      c.classList.toggle('active', c.dataset.geo === st.geometry);
-    });
+    document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+    if (st.geometry === 'stl' && st.stlFileId) {
+      model.visible = false;
+      var stlChip = document.querySelector('.chip[data-stl="' + st.stlFileId + '"]');
+      if (stlChip) stlChip.classList.add('active');
+      if (typeof loadStlFromServer === 'function') loadStlFromServer(st.stlFileId);
+    } else {
+      var geoChip = document.querySelector('.chip[data-geo="' + st.geometry + '"]');
+      if (geoChip) geoChip.classList.add('active');
+    }
 
     // Material sliders
     var rs = document.getElementById('rough-slider');
@@ -724,9 +735,9 @@ function loadState() {
     // Model position/rotation
     ['x','y','z'].forEach(function(a) {
       var pel = document.querySelector('.geo-pos-' + a);
-      if (pel) { pel.value = st.modelPos[a]; document.querySelector('.geo-pos-' + a + '-val').textContent = st.modelPos[a].toFixed(1); }
+      if (pel) { pel.value = st.modelPos[a]; pel.dispatchEvent(new Event('input')); }
       var rel = document.querySelector('.geo-rot-' + a);
-      if (rel) { rel.value = st.modelRot[a]; document.querySelector('.geo-rot-' + a + '-val').innerHTML = st.modelRot[a] + '&deg;'; }
+      if (rel) { rel.value = st.modelRot[a]; rel.dispatchEvent(new Event('input')); }
     });
 
     // Rebuild light list
@@ -748,7 +759,8 @@ function loadState() {
       if (firstName) firstName.textContent = '主光源';
       lucide.createIcons();
     }
-  } catch (_) {}
+    if (st.geometry !== 'stl') restoringState = false;
+  } catch (_) { restoringState = false; }
 }
 function syncMatFromRgb(r,g,b) {
   var hex = hexFromRgb(r,g,b);
@@ -822,7 +834,7 @@ function handleSTL(file) {
       document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
       // Auto-upload to server
       if (localStorage.getItem('token') && window.uploadStl) {
-        window.uploadStl(file).then(function() { stlStatus.textContent = file.name + ' — 已保存'; refreshStlList(); }).catch(function(e) { stlStatus.textContent = e.message; });
+        window.uploadStl(file).then(function(stl) { stlStatus.textContent = file.name + ' — 已保存'; refreshStlList(stl.id); }).catch(function(e) { stlStatus.textContent = e.message; });
       }
     } catch (ex) {
       stlStatus.textContent = '解析失败: ' + ex.message;
@@ -1013,8 +1025,6 @@ document.getElementById('btn-load-preset').addEventListener('click', function() 
   openLoadPresetModal();
 });
 
-loadState();
-saveState(); // ensure a fresh save on first visit
 lucide.createIcons();
 </script>
 <script src="js/layout.js"></script>
@@ -1063,6 +1073,8 @@ let currentGeo = 'sphere';
 const material = new THREE.MeshStandardMaterial({ color: '#808080', roughness: 0.5, metalness: 0 });
 let model = new THREE.Mesh(geometries[currentGeo], material);
 scene.add(model);
+loadState();
+saveState();
 
 // ── Geometry selector ──
 document.querySelectorAll('.chip').forEach(function (chip) {
@@ -1263,6 +1275,10 @@ renderer.domElement.addEventListener('pointerdown', function (e) {
     selectedLight = hits[0].object.userData.light;
     isDragging = true;
     controls.enabled = false;
+    var selectedIdx = hits[0].object.userData.lightIndex;
+    document.querySelectorAll('.light-row').forEach(function(r) {
+      r.classList.toggle('expanded', parseInt(r.getAttribute('data-light-id')) === selectedIdx);
+    });
     // Set drag plane perpendicular to camera, passing through light position
     var camDir = new THREE.Vector3();
     camera.getWorldDirection(camDir);
@@ -1499,22 +1515,37 @@ function animate() {
 animate();
 
 // ── STL server sync ──
-function refreshStlList() {
+function getActiveStlId() {
+  var active = document.querySelector('.chip[data-stl].active');
+  if (active && active.dataset.stl) return active.dataset.stl;
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return null;
+    var st = JSON.parse(raw);
+    if (st && st.geometry === 'stl' && st.stlFileId) return st.stlFileId;
+  } catch (_) {}
+  return null;
+}
+
+function refreshStlList(activeStlId, callback) {
   var container = document.getElementById('stl-chips');
   if (!container) { console.warn('stl-chips not found'); return; }
-  if (!localStorage.getItem('token')) { setTimeout(refreshStlList, 500); return; }
+  if (!activeStlId) activeStlId = getActiveStlId();
+  if (!localStorage.getItem('token')) { setTimeout(function() { refreshStlList(activeStlId, callback); }, 500); return; }
   window.getStls().then(function(list) {
-    if (!list || !list.length) { container.innerHTML = ''; return; }
+    if (!list || !list.length) { container.innerHTML = ''; if (callback) callback(); return; }
     container.innerHTML = list.map(function(s) {
       var name = s.displayName.length > 20 ? s.displayName.slice(0, 18) + '...' : s.displayName;
-    return '<span class="chip" data-stl="' + s.id + '" onclick="loadStlFromServer(\'' + s.id + '\')" title="双击改名: ' + s.displayName + '">' +
+      var isActive = activeStlId && s.id === activeStlId;
+    return '<span class="chip' + (isActive ? ' active' : '') + '" data-stl="' + s.id + '" onclick="loadStlFromServer(\'' + s.id + '\')" title="双击改名: ' + s.displayName + '">' +
         name +
         '<span class="stl-del" onclick="event.stopPropagation();deleteStlFromServer(\'' + s.id + '\')" title="删除">&times;</span>' +
         '</span>';
     }).join('');
-  }).catch(function(e){ console.warn('STL list failed', e); });
+    if (callback) callback();
+  }).catch(function(e){ console.warn('STL list failed', e); if (callback) callback(); });
 }
-setTimeout(refreshStlList, 300);
+setTimeout(function() { refreshStlList(getActiveStlId()); }, 300);
 
 // Double-click STL chip to rename
 document.querySelector('.chip-row').addEventListener('dblclick', function(e) {
@@ -1554,18 +1585,35 @@ function loadStlFromServer(id) {
       bb.getSize(sz); var m = Math.max(sz.x, sz.y, sz.z);
       if (m > 0) g.scale(2/m, 2/m, 2/m);
       model.geometry = g;
-      document.querySelectorAll('.chip').forEach(function(el){el.classList.remove('active');});
-      var chip = document.querySelector('.chip[data-stl="' + id + '"]');
-      if (chip) chip.classList.add('active');
+      model.visible = true;
+      refreshStlList(id, function() {
+        restoringState = false;
+        rebuildMarkers();
+        debouncedSave();
+      });
       stlStatus.textContent = found.displayName + ' — 已加载';
-    }).catch(function(){ stlStatus.textContent = '加载失败'; });
+    }).catch(function(){ stlStatus.textContent = '加载失败'; model.visible = true; restoringState = false; });
   });
 }
 
 function deleteStlFromServer(id) {
-  if (!confirm('删除此模型？')) return;
-  window.deleteStl(id).then(function(){ refreshStlList(); }).catch(function(){});
+  window.getPresets().then(function(presets) {
+    var linked = presets.filter(function(p) { return p.geometryRefId === id; });
+    var msg = '删除此模型？';
+    if (linked.length) {
+      msg = '此 STL 有 ' + linked.length + ' 个关联的灯光方案，删除 STL 将同时删除这些方案。\n\n确认删除？';
+    }
+    if (!confirm(msg)) return;
+    window.deleteStl(id).then(function(resp) {
+      if (resp.deletedPresets > 0) { loadPresetsPageIfOpen(); }
+      refreshStlList();
+    }).catch(function(){});
+  }).catch(function() {
+    if (!confirm('删除此模型？')) return;
+    window.deleteStl(id).then(function(){ refreshStlList(); }).catch(function(){});
+  });
 }
+function loadPresetsPageIfOpen() {}
 </script>
 
 <!-- Save Preset Modal -->
@@ -1602,7 +1650,8 @@ function deleteStlFromServer(id) {
 var savePresetCoverData = null;
 
 window.openSavePresetModal = function() {
-  savePresetCoverData = renderer.domElement.toDataURL('image/png');
+  renderer.render(scene, camera);
+  savePresetCoverData = renderer.domElement.toDataURL('image/png').split(',')[1];
   document.getElementById('save-preset-name').value = '';
   document.getElementById('save-preset-modal').classList.add('open');
   setTimeout(function() { document.getElementById('save-preset-name').focus(); }, 100);
@@ -1616,10 +1665,11 @@ window.confirmSavePreset = function() {
   var name = document.getElementById('save-preset-name').value.trim();
   if (!name) { alert('请输入方案名称'); return; }
 
-  var geoChip = document.querySelector('.chip[data-geo].active');
   var stlChip = document.querySelector('.chip[data-stl].active');
-  var geometryType = stlChip ? 'stl' : (geoChip ? geoChip.dataset.geo : 'sphere');
-  var geometryRefId = stlChip ? (stlChip.dataset.stl || null) : null;
+  var geoChip = document.querySelector('.chip[data-geo].active');
+  var isStl = (stlChip && !geoChip) || (model.geometry && model.geometry.type === 'BufferGeometry');
+  var geometryType = isStl ? 'stl' : (geoChip ? geoChip.dataset.geo : 'sphere');
+  var geometryRefId = isStl && stlChip ? (stlChip.dataset.stl || null) : null;
 
   var materialSnapshot = {
     r: +document.getElementById('mat-r').value || 128,
@@ -1648,13 +1698,18 @@ window.confirmSavePreset = function() {
     });
   });
 
+  var stlFileName = stlChip ? (stlChip.textContent.replace(/×$/, '').trim()) : null;
+
   var data = {
     name: name,
     geometryType: geometryType,
     geometryRefId: geometryRefId,
-    materialSnapshot: materialSnapshot,
-    lightsSnapshot: lightsSnapshot,
-    coverImage: savePresetCoverData
+    stlFileName: stlFileName,
+    materialSnapshot: JSON.stringify(materialSnapshot),
+    lightsSnapshot: JSON.stringify(lightsSnapshot),
+    coverImage: savePresetCoverData,
+    modelPos: JSON.stringify({ x: parseFloat(document.querySelector('.geo-pos-x')?.value||0), y: parseFloat(document.querySelector('.geo-pos-y')?.value||0), z: parseFloat(document.querySelector('.geo-pos-z')?.value||0) }),
+    modelRot: JSON.stringify({ x: parseInt(document.querySelector('.geo-rot-x')?.value||0), y: parseInt(document.querySelector('.geo-rot-y')?.value||0), z: parseInt(document.querySelector('.geo-rot-z')?.value||0) })
   };
 
   var saveBtn = document.querySelector('#save-preset-modal .btn-primary');
@@ -1694,7 +1749,7 @@ function renderLoadPresetList(search) {
 
     container.innerHTML = filtered.map(function(p) {
       var date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('zh-CN') : '';
-      var geoLabel = ({ sphere: '球体', cube: '立方体', cylinder: '圆柱体', stl: 'STL模型' })[p.geometryType] || p.geometryType || '未知';
+      var geoLabel = p.geometryType === 'stl' && p.stlFileName ? ('STL: ' + escapeHtml(p.stlFileName)) : ({ sphere: '球体', cube: '立方体', cylinder: '圆柱体', stl: 'STL模型' })[p.geometryType] || p.geometryType || '未知';
       return '<div class="preset-load-item" onclick="applyPresetById(\'' + p.id + '\')">' +
         '<div class="preset-load-info">' +
         '<div class="preset-load-name">' + escapeHtml(p.name) + '</div>' +
@@ -1727,6 +1782,7 @@ function applyPresetById(id) {
 }
 
 function applyPresetData(preset) {
+  restoringState = true;
   if (typeof preset.materialSnapshot === 'string') {
     try { preset.materialSnapshot = JSON.parse(preset.materialSnapshot); } catch(e) {}
   }
@@ -1788,16 +1844,32 @@ function applyPresetData(preset) {
         loadStlFromServer(preset.geometryRefId);
       }
     } else if (geometries[gt]) {
-      document.querySelectorAll('.chip').forEach(function(c) {
-        c.classList.toggle('active', c.dataset.geo === gt);
-      });
-      document.querySelectorAll('.chip[data-stl]').forEach(function(c) { c.classList.remove('active'); });
+      restoringState = false;
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+      var targetChip = document.querySelector('.chip[data-geo="' + gt + '"]');
+      if (targetChip) targetChip.classList.add('active');
+      model.visible = true;
       model.geometry = geometries[gt];
     }
   }
 
+  if (preset.modelPos) {
+    var mp = typeof preset.modelPos === 'string' ? JSON.parse(preset.modelPos) : preset.modelPos;
+    ['x','y','z'].forEach(function(a) {
+      var el = document.querySelector('.geo-pos-' + a);
+      if (el) { el.value = mp[a] || 0; el.dispatchEvent(new Event('input')); }
+    });
+  }
+  if (preset.modelRot) {
+    var mr = typeof preset.modelRot === 'string' ? JSON.parse(preset.modelRot) : preset.modelRot;
+    ['x','y','z'].forEach(function(a) {
+      var el = document.querySelector('.geo-rot-' + a);
+      if (el) { el.value = mr[a] || 0; el.dispatchEvent(new Event('input')); }
+    });
+  }
+
   rebuildMarkers();
-  saveState();
+  if (preset.geometryType !== 'stl') saveState();
 }
 
 (function() {

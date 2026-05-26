@@ -201,35 +201,30 @@
       <div class="icon"><i data-lucide="palette" class="nav-icon"></i></div>
       <div class="title">漆料库</div>
       <div class="desc">拍照取色录入真实颜色，管理手头所有漆料库存</div>
-      <span class="tag">已实现</span>
     </a>
 
     <a class="card" href="/mix">
       <div class="icon"><i data-lucide="flask-conical" class="nav-icon"></i></div>
-      <div class="title">调色引擎</div>
+      <div class="title">混色引擎</div>
       <div class="desc">目标色 → 整数份数配方，从库存匹配最佳混合方案</div>
-      <span class="tag">已实现</span>
     </a>
 
     <a class="card" href="/color-wheel">
       <div class="icon"><i data-lucide="palette" class="nav-icon"></i></div>
       <div class="title">色彩工具</div>
       <div class="desc">互补色、三角色、类似色 — 弥补色彩理论短板</div>
-      <span class="tag">已实现</span>
     </a>
 
     <a class="card" href="/preview">
       <div class="icon"><i data-lucide="box" class="nav-icon"></i></div>
       <div class="title">3D 预览</div>
       <div class="desc">几何体 + STL 模型上预览材质和光照效果</div>
-      <span class="tag wip">开发中</span>
     </a>
 
     <a class="card" href="/recipes">
       <div class="icon"><i data-lucide="clipboard-list" class="nav-icon"></i></div>
       <div class="title">配方库</div>
       <div class="desc">标签筛选 + 搜索，随手回看已保存的混色方案</div>
-      <span class="tag wip">开发中</span>
     </a>
 
     <a class="card" href="/presets">
@@ -242,19 +237,6 @@
 </main>
 
 <script>
-  // Check login state
-  var token = localStorage.getItem('token');
-  var email = localStorage.getItem('email');
-  if (token && email) {
-    document.getElementById('user-display').textContent = email;
-    document.getElementById('auth-link').textContent = '退出';
-    document.getElementById('auth-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
-      location.reload();
-    });
-  }
 lucide.createIcons();
 </script>
 <script src="js/layout.js"></script>

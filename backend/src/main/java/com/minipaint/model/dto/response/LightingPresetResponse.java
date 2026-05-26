@@ -12,6 +12,9 @@ public class LightingPresetResponse {
     private String materialSnapshot;
     private String lightsSnapshot;
     private String coverImagePath;
+    private String stlFileName;
+    private String modelPos;
+    private String modelRot;
     private Instant createdAt;
 
     public static LightingPresetResponse from(LightingPreset p) {
@@ -23,6 +26,9 @@ public class LightingPresetResponse {
         resp.materialSnapshot = p.getMaterialSnapshot();
         resp.lightsSnapshot = p.getLightsSnapshot();
         resp.coverImagePath = p.getCoverImagePath();
+        resp.stlFileName = p.getStlFileName();
+        resp.modelPos = p.getModelPos();
+        resp.modelRot = p.getModelRot();
         resp.createdAt = p.getCreatedAt();
         return resp;
     }
@@ -34,5 +40,8 @@ public class LightingPresetResponse {
     public String getMaterialSnapshot() { return materialSnapshot; }
     public String getLightsSnapshot() { return lightsSnapshot; }
     public String getCoverImagePath() { return coverImagePath; }
+    public String getStlFileName() { return stlFileName; }
+    public String getModelPos() { return modelPos; }
+    public String getModelRot() { return modelRot; }
     public Instant getCreatedAt() { return createdAt; }
 }
