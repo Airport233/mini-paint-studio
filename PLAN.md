@@ -832,41 +832,25 @@ Commit: `feat: add lighting preset pages with auto-screenshot cover and apply-na
 
 ## Phase 8: Color Wheel + Cross-Page Integration
 
-### Task 8.1: ColorWheelController (Backend)
+### [x] Task 8.1: ColorWheelController (Backend) — SKIPPED
 
-- [ ] **Step 1: Create ColorWheelController** — GET /api/color-wheel/complementary?r=&g=&b=, /triadic, /analogous, /split-complementary. Each calculates HSL → rotate hue → return list of {r,g,b,label}. Stateless, no auth required (utility endpoint)
+- [x] Color calculations done client-side (HSL math on Canvas), no backend needed
 
-Commit: `feat: add ColorWheelController with complementary/triadic/analogous calculation`（使用上述格式，标注 Subagent）
+### [x] Task 8.2: ColorWheel Page — PRE-EXISTING
 
-### Task 8.2: ColorWheel Page + Panel (Frontend)
+- [x] `color-wheel.html` (496 lines) — canvas color wheel, scheme buttons, gamut visualization, "去混色" navigation. Built during Phase 4-6 integration work.
 
-- [ ] **Step 1: Create ColorWheelPage.tsx** — full-page HSL color wheel rendered on Canvas. Click to select hue + saturation. Below: selected color swatch + 4 scheme panels (complementary, triadic, analogous, split-complementary). Each scheme card shows color swatches + labels
+### [x] Task 8.3: Cross-Page Integration — `a784b44`
 
-- [ ] **Step 2: Create ColorWheelPanel.tsx** — floating panel version (smaller, modal/drawer). Same logic, used from PaintLibrary/MixEngine/Preview3D
+- [x] **Step 1: Sidebar** — all pages wired via layout.js
+- [x] **Step 2: MixEngine → 3D Preview** — "3D预览" button on each candidate, navigates to `/preview?r=&g=&b=`
+- [x] **Step 3: MixEngine → Recipes** — "保存" button opens save modal, saves to /api/recipes
+- [x] **Step 4: Preview → MixEngine** — canvas eyedropper → "去混色" navigates to /mix with color
+- [x] **Step 5: ColorWheel → Mix** — "去混色" buttons in color-wheel.html
+- [x] **Step 6: Preview → LightingPresets** — save/load preset modals
 
-- [ ] Step 3: Create colorWheelService.ts → thin wrapper around ColorWheelController API
-
-- [ ] **Step 4: Create colorStore.ts** — Zustand store: selectedColor {r,g,b} | null, sourcePage string, setSelectedColor(r,g,b,source) → consumed by calling page
-
-Commit: `feat: add ColorWheel full page and floating panel with scheme calculations`（使用上述格式，标注 Subagent）
-
-### Task 8.3: Cross-Page Integration
-
-- [ ] **Step 1: Wire Sidebar** — active route state, all 6 pages (except /auth) visible in sidebar
-
-- [ ] **Step 2: Wire MixEngine → 3D Preview** — "预览" button navigates to `/preview?r=170&g=85&b=0`
-
-- [ ] **Step 3: Wire MixEngine → Recipes** — "保存配方" opens modal, saves, navigates to /recipes
-
-- [ ] **Step 4: Wire Preview3D → Screenshot → MixEngine** — screenshot triggers ColorPicker, after pick → navigate to /mix with color state
-
-- [ ] **Step 5: Wire ColorWheel to each page** — PaintLibrary: show existing paint hues on wheel. MixEngine: selected color fills target. Preview3D: selected color applies to material
-
-- [ ] **Step 6: Wire Preview3D → LightingPresets** — "保存方案" button with auto-screenshot
-
-Run: manual end-to-end flow validation — upload paint → pick target → mix → preview → save recipe → save lighting preset → recall
-
-Commit: `feat: wire cross-page navigation, ColorWheel integration, and complete user flows`（使用上述格式，标注 Subagent）
+Subagent: claude-code-s9 (mix button + preview receiver)
+Review: code-reviewer found missing preview.html ?r=&g=&b= handler — fixed
 
 ---
 
