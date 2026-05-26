@@ -486,6 +486,7 @@
           + '<div class="hint">整数份数 · 总份数 ≤ 6 · 漆种 ≤ 3</div></div>'
           + '<span class="delta">ΔE ' + c.deviation.toFixed(1) + '</span>'
           + '<button onclick="openSaveModal(' + i + ')" style="margin-left:8px;padding:3px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">保存</button>'
+          + '<button onclick="window.location.href=\'/preview?r=' + c.mixedR + '&g=' + c.mixedG + '&b=' + c.mixedB + '\'" style="margin-left:4px;padding:3px 12px;background:var(--surface-warm);color:var(--fg);border:1px solid var(--border-solid);border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit">3D预览</button>'
           + '</div>';
       }).join('');
       lastMixResult = data;
