@@ -287,7 +287,7 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 3. **Subagent 派发与两阶段评审的缺失：一个双方都没察觉的流程偏离**
 
-本项目（当前仓库，Phase 0–6）中**未实际使用 subagent 派发**（`Agent` tool 启动隔离子 agent 独立完成单个 task），也**未触发两阶段评审**（`requesting-code-review` 技能），尽管 168/170 个 commit 均标注了 `Subagent:` 署名行。以下是完整复盘：
+本项目（当前仓库共有9阶段，Phase 0–6）中**未实际使用 subagent 派发**（`Agent` tool 启动隔离子 agent 独立完成单个 task），也**未触发两阶段评审**（`requesting-code-review` 技能），尽管 168/170 个 commit 均标注了 `Subagent:` 署名行。以下是完整复盘：
 
 **背景：这不是第一次尝试。** 在本仓库之前，我已经用另一个 session 和另一个文件夹完整走过一轮项目构建。在那次尝试中，我确实使用了 subagent 派发，但暴露出三个问题：(1) 主 agent 等待 subagent 完成期间交互节奏变慢；(2) 我当时忽视了 commit message 中的 agent 署名规范，导致提交缺乏 `Subagent:` / `Human-Edit:` 标注；(3) brainstorming 阶段的需求覆盖不全面，加上 Open Design 的使用方式不对（让设计工具生成 React 工程而非 HTML 原型），最终整个前端推倒重来。
 
