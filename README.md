@@ -21,6 +21,44 @@ docker compose up -d
 # http://localhost
 ```
 
+### 云部署
+
+项目已部署至校园网云主机：**http://172.29.5.106**
+
+部署步骤：
+
+```bash
+# 1. 安装 Docker（Ubuntu 24.04 snap）
+sudo snap install docker
+
+# 2. 配置国内镜像源（校园网访问 Docker Hub 需代理）
+sudo mkdir -p /var/snap/docker/current/config
+sudo tee /var/snap/docker/current/config/daemon.json << EOF
+{
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "https://dockerproxy.com",
+    "https://mirror.ccs.tencentyun.com"
+  ]
+}
+EOF
+sudo snap restart docker
+
+# 3. 克隆并启动
+git clone https://github.com/Airport233/mini-paint-studio.git
+cd mini-paint-studio
+
+# 4. 修改 CORS 和安全配置
+#   - SecurityConfig.java: 添加云主机 IP 到 allowedOriginPatterns
+#   - docker-compose.yml: 设置 JWT_SECRET（>= 256 bits）
+#   - docker-compose.yml: 首次部署添加 SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+# 5. 启动
+docker compose up -d --build
+```
+
+数据持久化：PostgreSQL 使用 Docker 命名卷 `pgdata`，容器删除或重启不会丢失数据。`docker compose down -v` 会删除卷。
+
 ## 开发环境
 
 ### 后端
@@ -84,10 +122,17 @@ cd frontend && npm run build
 | POST | /api/auth/register | 注册 |
 | POST | /api/auth/login | 登录 |
 | POST | /api/auth/forgot-password | 忘记密码 |
-| GET | /api/paints | 漆料列表（?brand=&sort=） |
-| POST | /api/paints | 新增漆料 |
-| PUT | /api/paints/:id | 编辑漆料 |
-| DELETE | /api/paints/:id | 删除漆料 |
+| GET/POST | /api/paints | 漆料列表/新增 |
+| PUT/DELETE | /api/paints/:id | 编辑/删除漆料 |
+| POST | /api/mix | 混色计算（r,g,b → 整数份数配方） |
+| GET/POST | /api/recipes | 配方列表/保存 |
+| GET/PUT/DELETE | /api/recipes/:id | 配方详情/编辑/删除 |
+| GET/POST | /api/stl | STL 文件列表/上传 |
+| GET | /api/stl/:id/download | STL 文件下载 |
+| PUT/DELETE | /api/stl/:id | STL 重命名/删除（级联删除灯光方案） |
+| GET/POST | /api/lighting-presets | 灯光方案列表/保存 |
+| GET/PUT/DELETE | /api/lighting-presets/:id | 方案详情/编辑/删除 |
+| GET | /api/lighting-presets/:id/cover | 方案封面图片 |
 
 ## 环境变量
 
