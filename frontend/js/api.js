@@ -141,3 +141,9 @@ window.getRecipes = async function(params) {
 window.getRecipe = async function(id) { return api('GET', '/recipes/' + id); };
 window.updateRecipe = async function(id, data) { return api('PUT', '/recipes/' + id, data); };
 window.deleteRecipe = async function(id) { return api('DELETE', '/recipes/' + id); };
+
+// Lighting Presets
+window.savePreset = async function(data) { return api('POST', '/lighting-presets', data); };
+window.getPresets = async function() { return api('GET', '/lighting-presets'); };
+window.getPreset = async function(id) { return api('GET', '/lighting-presets/' + id); };
+window.deletePreset = async function(id) { return api('DELETE', '/lighting-presets/' + id); };

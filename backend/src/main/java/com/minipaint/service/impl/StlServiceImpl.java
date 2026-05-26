@@ -2,6 +2,7 @@ package com.minipaint.service.impl;
 
 import com.minipaint.model.dto.response.StlResponse;
 import com.minipaint.model.entity.StlFile;
+import com.minipaint.repository.LightingPresetRepository;
 import com.minipaint.repository.StlFileRepository;
 import com.minipaint.service.FileStorageService;
 import com.minipaint.service.StlService;
@@ -13,10 +14,11 @@ import java.util.stream.Collectors;
 @Service
 public class StlServiceImpl implements StlService {
     private final StlFileRepository repo;
+    private final LightingPresetRepository presetRepo;
     private final FileStorageService storage;
 
-    public StlServiceImpl(StlFileRepository repo, FileStorageService storage) {
-        this.repo = repo; this.storage = storage;
+    public StlServiceImpl(StlFileRepository repo, LightingPresetRepository presetRepo, FileStorageService storage) {
+        this.repo = repo; this.presetRepo = presetRepo; this.storage = storage;
     }
 
     @Override
@@ -75,10 +77,17 @@ public class StlServiceImpl implements StlService {
     }
 
     @Override
-    public void delete(UUID userId, UUID fileId) {
+    public int delete(UUID userId, UUID fileId) {
         var f = repo.findById(fileId).orElseThrow(() -> new RuntimeException("文件不存在"));
         if (!f.getUserId().equals(userId)) throw new RuntimeException("无权删除");
+        var presets = presetRepo.findByUserIdAndGeometryRefId(userId, fileId);
+        int count = presets.size();
+        presets.forEach(p -> {
+            if (p.getCoverImagePath() != null) storage.delete(p.getCoverImagePath());
+            presetRepo.delete(p);
+        });
         storage.delete(f.getFilePath());
         repo.delete(f);
+        return count;
     }
 }

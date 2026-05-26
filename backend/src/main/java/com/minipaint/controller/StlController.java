@@ -42,13 +42,16 @@ public class StlController {
         var stl = stlService.get(user.getId(), UUID.fromString(id));
         try {
             byte[] bytes = java.nio.file.Files.readAllBytes(java.nio.file.Path.of(stl.getFilePath()));
-            return ResponseEntity.ok().header("Content-Type", "application/octet-stream").body(bytes);
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/octet-stream")
+                    .header("Cache-Control", "public, max-age=86400, immutable")
+                    .body(bytes);
         } catch (Exception e) { return ResponseEntity.notFound().build(); }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal User user, @PathVariable String id) {
-        stlService.delete(user.getId(), UUID.fromString(id));
-        return ResponseEntity.ok(Map.of("message", "已删除"));
+        int deletedPresets = stlService.delete(user.getId(), UUID.fromString(id));
+        return ResponseEntity.ok(Map.of("message", "已删除", "deletedPresets", deletedPresets));
     }
 }

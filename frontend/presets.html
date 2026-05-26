@@ -17,6 +17,7 @@
     --border-solid: #3f4147;
     --accent:       #5865f2;
     --accent-hover: #4752c4;
+    --danger:       #f23f43;
     --radius-sm:    4px;
     --radius-md:    8px;
     --font:         "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -40,7 +41,7 @@
     display: flex; flex-direction: column;
     padding: 16px 8px;
   }
-  nav .brand { font-size: 16px; font-weight: 700; color: var(--fg-2); padding: 0 8px 20px; }
+  nav .brand { font-size: 16px; font-weight: 700; color: var(--fg-2); padding: 0 8px 20px; display: flex; align-items: center; gap: 8px; }
   nav .brand span { color: var(--accent); }
   nav a {
     display: flex; align-items: center; gap: 10px;
@@ -58,7 +59,7 @@
   h1 { font-size: 24px; font-weight: 700; color: var(--fg-2); margin-bottom: 8px; }
   .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
 
-  .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
+  .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
   .search {
     flex: 1; min-width: 200px; max-width: 360px;
     background: var(--surface-warm); border: 1px solid var(--border-solid);
@@ -70,52 +71,64 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
   }
   .card {
     background: var(--surface); border-radius: var(--radius-md);
-    border: 1px solid var(--border); overflow: hidden;
-    cursor: pointer; transition: border-color 0.2s, transform 0.2s;
+    border: 1px solid var(--border); padding: 16px;
+    transition: border-color 0.2s, transform 0.2s;
   }
   .card:hover { border-color: var(--border-solid); transform: translateY(-2px); }
-  .card .cover {
-    height: 140px; background: var(--surface-warm);
+
+  .card-cover {
+    width: 100%; height: 140px;
+    background: var(--surface-warm);
+    border-radius: var(--radius-sm);
+    overflow: hidden; margin-bottom: 12px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--meta);
   }
-  .card .cover .nav-icon { width: 36px; height: 36px; }
-  .card .cover img { width: 100%; height: 100%; object-fit: cover; }
-  .card .info { padding: 14px 16px; }
-  .card .name { font-size: 15px; font-weight: 600; color: var(--fg-2); margin-bottom: 4px; }
-  .card .meta-row { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
-  .card .type-badge {
-    font-size: 11px; padding: 2px 8px; border-radius: 999px;
-    background: rgba(88, 101, 242, 0.15); color: var(--accent);
+  .card-cover img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
   }
-  .card .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .card-cover .no-cover {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    color: var(--meta); font-size: 12px;
+  }
+  .card-cover .no-cover .nav-icon { width: 32px; height: 32px; }
+
+  .card-name { font-size: 16px; font-weight: 600; color: var(--fg-2); margin-bottom: 6px; }
+  .card-geo { font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
+  .card-date { font-size: 12px; color: var(--meta); margin-bottom: 12px; }
+
+  .card-actions { display: flex; gap: 8px; }
+  .card-actions .btn { flex: 1; justify-content: center; }
+
   .btn {
-    padding: 6px 14px; border-radius: var(--radius-sm);
+    padding: 8px 14px; border-radius: var(--radius-sm);
     font-size: 12px; font-weight: 600; cursor: pointer;
     transition: background 0.15s; border: none; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
   }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-hover); }
-  .btn-secondary { background: #4e5058; color: #fff; }
-  .btn-secondary:hover { background: #6d6f78; }
-  .btn-danger { background: transparent; color: var(--muted); border: 1px solid var(--border-solid); }
-  .btn-danger:hover { color: var(--danger); border-color: var(--danger); }
+  .btn-danger { background: transparent; color: var(--meta); border: 1px solid var(--border-solid); }
+  .btn-danger:hover { border-color: var(--danger); color: var(--danger); }
 
   .empty {
     text-align: center; padding: 80px 20px; color: var(--muted);
     display: none;
   }
-  .empty .icon { font-size: 48px; margin-bottom: 12px; }
-  .icon .nav-icon, .card .icon .nav-icon { width: 32px; height: 32px; }
+  .empty .icon { margin-bottom: 12px; }
   .empty .icon .nav-icon { width: 48px; height: 48px; }
-  .empty p { font-size: 15px; }
+  .empty p { font-size: 15px; margin-bottom: 8px; }
+  .empty a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .empty a:hover { text-decoration: underline; }
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth-guard.js"></script>
   <link rel="stylesheet" href="css/layout.css">
 </head>
 <body>
@@ -124,7 +137,7 @@
 
 <main>
   <h1>灯光预设</h1>
-  <p class="subtitle">保存并回放 3D 场景的多光源配置 — 一键恢复几何体、材质、所有光源</p>
+  <p class="subtitle">管理已保存的 3D 打光方案 — 点击应用快速切换</p>
 
   <div class="toolbar">
     <input class="search" placeholder="搜索方案名称…" id="search">
@@ -134,40 +147,96 @@
 
   <div class="empty" id="empty">
     <div class="icon"><i data-lucide="lightbulb" class="nav-icon"></i></div>
-    <p>还没有保存灯光预设，去 3D 预览中设置光源后保存</p>
+    <p>还没有保存灯光方案，去 3D 预览试试</p>
+    <a href="/preview">打开 3D 预览</a>
   </div>
 </main>
 
 <script>
-  var presets = [
-    { name:'顶光+侧光_暖色_NMM参考', geometry:'球体', lights:3, date:'2026-05-21' },
-    { name:'三灯_金属质感_冷色温', geometry:'立方体', lights:2, date:'2026-05-19' },
-    { name:'极限战士 STL 打光', geometry:'STL · marine.stl', lights:4, date:'2026-05-17' }
-  ];
+  var geoLabels = { sphere: '球体', cube: '立方体', cylinder: '圆柱体', stl: 'STL模型' };
+  var presets = [];
 
-  function render() {
-    var q = (document.getElementById('search').value || '').toLowerCase();
-    var f = presets.filter(function(p) {
-      return !q || p.name.toLowerCase().indexOf(q) !== -1;
+  function loadPresets() {
+    var q = (document.getElementById('search')?.value || '').toLowerCase();
+    window.getPresets().then(function(list) {
+      presets = q ? list.filter(function(p) { return p.name.toLowerCase().includes(q); }) : list;
+      render();
+    }).catch(function() {
+      presets = [];
+      render();
     });
-    document.getElementById('grid').innerHTML = f.map(function(p) {
-      return '<div class="card">'
-        + '<div class="cover"><i data-lucide="lightbulb" class="nav-icon"></i></div>'
-        + '<div class="info">'
-        + '<div class="name">' + p.name + '</div>'
-        + '<div class="meta-row">'
-        + '<span class="type-badge">' + p.geometry + '</span>'
-        + '<span>' + p.lights + ' 个光源 · ' + p.date + '</span></div>'
-        + '<div class="actions">'
-        + '<a class="btn btn-primary" href="/preview"><i data-lucide="play" class="nav-icon"></i> 应用</a>'
-        + '<button class="btn btn-danger" onclick="event.stopPropagation();alert(\'[Hook] DELETE /api/lighting-presets/:id\')">删除</button>'
-        + '</div></div></div>';
-    }).join('');
-    document.getElementById('empty').style.display = f.length ? 'none' : 'block';
   }
 
-  document.getElementById('search').addEventListener('input', render);
-  render();
+  function render() {
+    var grid = document.getElementById('grid');
+    var empty = document.getElementById('empty');
+    if (!grid) return;
+
+    if (!presets.length) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    var html = '';
+    for (var i = 0; i < presets.length; i++) {
+      var p = presets[i];
+      var date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('zh-CN') : '';
+      var geoLabel = p.geometryType === 'stl' && p.stlFileName ? ('STL: ' + escapeHtml(p.stlFileName)) : (geoLabels[p.geometryType] || p.geometryType || '未知');
+      var coverHtml = p.coverImagePath
+        ? '<img class="cover-img" data-pid="' + p.id + '" alt="" style="width:100%;height:100%;object-fit:cover">'
+        : '<div class="no-cover"><i data-lucide="image" class="nav-icon"></i><span>无封面</span></div>';
+
+      html += '<div class="card">' +
+        '<div class="card-cover">' + coverHtml + '</div>' +
+        '<div class="card-name">' + escapeHtml(p.name) + '</div>' +
+        '<div class="card-geo">' + geoLabel + '</div>' +
+        '<div class="card-date">' + date + '</div>' +
+        '<div class="card-actions">' +
+        '<button class="btn btn-primary btn-sm" onclick="applyPreset(\'' + p.id + '\')">应用</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deletePresetById(\'' + p.id + '\')">删除</button>' +
+        '</div></div>';
+    }
+    grid.innerHTML = html;
+    lucide.createIcons();
+    loadCoverImages();
+  }
+
+  function loadCoverImages() {
+    var token = localStorage.getItem('token');
+    if (!token) return;
+    document.querySelectorAll('.cover-img').forEach(function(img) {
+      var id = img.dataset.pid;
+      fetch('/api/lighting-presets/' + id + '/cover', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { if (r.ok) return r.blob(); throw new Error('no cover'); })
+        .then(function(blob) { img.src = URL.createObjectURL(blob); })
+        .catch(function() { img.style.display = 'none'; });
+    });
+  }
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.appendChild(document.createTextNode(s || ''));
+    return d.innerHTML;
+  }
+
+  function applyPreset(id) {
+    window.location.href = '/preview?preset=' + encodeURIComponent(id);
+  }
+
+  function deletePresetById(id) {
+    if (!confirm('删除此照明方案？')) return;
+    window.deletePreset(id).then(function() { loadPresets(); }).catch(function() { alert('删除失败'); });
+  }
+
+  var searchTimer = 0;
+  document.getElementById('search')?.addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadPresets, 250);
+  });
+
+  loadPresets();
 lucide.createIcons();
 </script>
 <script src="js/layout.js"></script>

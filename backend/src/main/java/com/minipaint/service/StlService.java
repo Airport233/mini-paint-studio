@@ -10,5 +10,5 @@ public interface StlService {
     StlResponse get(UUID userId, UUID fileId);
     List<StlResponse> list(UUID userId);
     StlResponse update(UUID userId, UUID fileId, String displayName, Double rx, Double ry, Double rz, Double h);
-    void delete(UUID userId, UUID fileId);
+    int delete(UUID userId, UUID fileId);
 }
