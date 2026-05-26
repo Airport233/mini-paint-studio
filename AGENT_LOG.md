@@ -54,6 +54,7 @@
 | 1.5 | `9c7229a` | JWT Filter + SecurityConfig（无状态会话 + BCrypt） |
 | 1.6 | `4860b03` | 前端 Auth Store + API 拦截器 + AuthPage（登录/注册/忘记密码 Tab） |
 
+- **技能**: `superpowers:test-driven-development`
 - **智能体**: Claude Code（直接执行）
 - **TDD**: 所有后端 task 遵循红→绿→重构
 - **测试**: 后端 15 tests PASS，前端 1 test PASS
@@ -70,6 +71,7 @@
 | 2.1 | `65bf30b` (worktree) | Brand 枚举 + Paint 实体 + PaintRepository + 3 tests |
 | 2.2 | `b6d82ed` (worktree) | PaintService + PaintController + DTOs（CRUD + 列表+筛选） |
 
+- **技能**: `superpowers:using-git-worktrees`, `superpowers:test-driven-development`
 - **Worktree**: `feature/paint-library`（`c:/Users/cc24a/Desktop/paint-library-backend`）
 - **智能体**: Claude Code（直接执行）
 - **TDD**: Repository 测试 → 实现 → Service 测试 → 实现 → Controller
@@ -124,6 +126,7 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 | 4.2 | `d4cd97b` (worktree) | 材质面板 — roughness/metalness/color 滑块 + 色块预览绑定 Three.js |
 | 4.3 | `b5d822d` (worktree) | 多光源系统 — Raycaster 拖拽, 相机面投影, 滚轮分离, 模型变换, 点光源 |
 
+- **技能**: `superpowers:using-git-worktrees`
 - **Worktree**: `feature/threed-preview`（`c:/Users/cc24a/Desktop/threed-preview`）
 - **PR**: [#2](https://github.com/Airport233/mini-paint-studio/pull/2)
 - **技术方案**: Three.js v0.147 CDN + OrbitControls.js + CSS3D
@@ -163,6 +166,7 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 | 5.2 | `08cdf19` | StlFile 实体 + Repository + StlService + StlController |
 | 5.3 | `d3b27cc` | 前端 STL 上传/列表/加载/删除 + SHA256 去重 + 双击改名 |
 
+- **技能**: `superpowers:using-git-worktrees`
 - **Worktree**: 初版 `feature/stl-support` / 后续直接在 main 迭代
 - **后端**: FileStorageService (store/delete/toAccessUrl), StlFile (userId + fileHash), StlController (upload/list/download/update/delete), SHA256 去重 (409 中文提示)
 - **前端**: STLLoader 本地解析 + 服务端上传, chip 样式列表 (× 删除 + 双击改名), 文件名截断 (20 字符), 选中高亮, 下载端点 `/api/stl/{id}/download`
@@ -186,6 +190,7 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 | 3.1 | `bcbf3d2` (worktree) | MixService 接口 + MixServiceRgbImpl（RGB 穷举，≤3漆，≤6份）|
 | 3.2 | `406310a` (worktree) | MixController + MixRequest DTO |
 
+- **技能**: `superpowers:using-git-worktrees`, `superpowers:test-driven-development`
 - **Worktree**: `feature/mix-engine`（`c:/Users/cc24a/Desktop/mix-engine-backend`）
 - **PR**: [#1](https://github.com/Airport233/mini-paint-studio/pull/1)
 - **TDD**: MixService 6 tests → compile error → implementation → 6 PASS
@@ -222,6 +227,8 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 ---
 
 ## 2026-05-26 — Phase 6 收尾 & 跨页面统一
+
+- **技能**: `superpowers:using-git-worktrees`（`feature/recipe-backend`，PR #4）
 
 本次会话完成 Phase 6（配方管理）的 UI 打磨、术语统一和首页清理。
 
@@ -301,7 +308,9 @@ Vite 中间件 `spaFallback()` + MPA `rollupOptions.input`
 
 ---
 
-## 2026-05-26 — 跨智能体协作：Codex 诊断 STL 标签闪烁 + localStorage 覆盖问题
+## 2026-05-26 — Phase 7 完成 + 跨智能体协作：Codex 诊断 STL 标签闪烁
+
+- **技能**: `superpowers:using-git-worktrees`, `superpowers:subagent-driven-development`（Task 7.2 前端派发 subagent）, `superpowers:requesting-code-review`（两阶段评审）, `superpowers:finishing-a-development-branch`
 
 Phase 7 遇到一个顽固问题：应用 STL 灯光方案后，标签选中态闪烁消失，localStorage 被覆盖为 `{"geometry":"sphere","stlFileId":null}`。Claude Code（本 session 主 agent）反复修复约 15 轮未果，用户将问题描述为 prompt 交给 GPT-5.2-Codex 诊断。
 
@@ -336,4 +345,33 @@ Codex 修复方案：新增 `getActiveStlId()` 从当前 DOM 或 `preview:state`
 - GPT-5.2-Codex：Phase 7 STL bug 诊断，用户将问题整理为 prompt 后交给 Codex
 
 Codex 修复后，用户将 Codex 的方案带回本 session，由 Claude Code 确认并整合。
+
+---
+
+## 2026-05-26 — Phase 8: 色彩工具 + 跨页集成
+
+- **技能**: `superpowers:using-git-worktrees`, `superpowers:subagent-driven-development`（mix→preview 导航）, `superpowers:requesting-code-review`（发现 preview.html 缺少 ?r=&g=&b= 接收端，已修复）, `superpowers:finishing-a-development-branch`
+
+Phase 8 大部分在前期顺带完成（color-wheel.html 纯客户端色轮、sidebar 已全局共享、mix→recipe 保存已实现、preview→mix 取色器已实现）。新增内容：
+
+- mix 候选卡片增加"3D预览"按钮，导航到 `/preview?r=&g=&b=`
+- preview.html 增加 `?r=&g=&b=` URL 参数处理，直接应用到材质颜色
+- 修复 syncMaterialColor 未调用导致 3D 物体颜色未更新的问题
+
+PR: [#6](https://github.com/Airport233/mini-paint-studio/pull/6)
+
+---
+
+## 2026-05-26 — Phase 9: Docker/CI + 云部署
+
+- **技能**: `superpowers:using-git-worktrees`, `superpowers:finishing-a-development-branch`
+
+Phase 9 大部分在早期提前完成（Dockerfiles、docker-compose.yml、nginx.conf、CI workflow、Makefile）。修复和部署：
+
+- 修复 nginx.conf MPA 路由（`try_files $uri $uri.html $uri/ /index.html`）
+- 修复 Dockerfile 缺少 `js/` 和 `css/` 目录导致侧边栏和认证脚本丢失
+- 部署到校园网云主机 `172.29.5.106`（Ubuntu 24.04，Docker snap，国内镜像源）
+- 修复 JWT secret 长度不足、Hibernate DDL 初始化为 update、CORS 添加云主机 IP
+
+PR: [#7](https://github.com/Airport233/mini-paint-studio/pull/7)
 

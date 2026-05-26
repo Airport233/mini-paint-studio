@@ -16,7 +16,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/minipaint
       DB_USERNAME: minipaint
       DB_PASSWORD: minipaint
-      JWT_SECRET: change-me-in-production
+      JWT_SECRET: hobbymix-super-secret-key-that-is-at-least-256-bits-long-2026
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     volumes:
       - uploads:/app/uploads
       - stl_files:/app/stl-files
