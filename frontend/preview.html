@@ -1586,6 +1586,7 @@ function loadStlFromServer(id) {
       if (m > 0) g.scale(2/m, 2/m, 2/m);
       model.geometry = g;
       model.visible = true;
+      document.querySelectorAll('.chip[data-geo]').forEach(function(c) { c.classList.remove('active'); });
       refreshStlList(id, function() {
         restoringState = false;
         rebuildMarkers();
