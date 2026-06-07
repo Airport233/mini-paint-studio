@@ -25,6 +25,8 @@ docker compose up -d
 
 项目已部署至校园网云主机：**http://172.29.5.106**
 
+GitHub 仓库：**[github.com/Airport233/mini-paint-studio](https://github.com/Airport233/mini-paint-studio)**
+
 测试账号：`cc24a_24@126.com` / `12345678`
 
 部署步骤：
